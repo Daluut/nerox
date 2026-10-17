@@ -1,26 +1,188 @@
 @import "tailwindcss";
+@import "@fontsource-variable/instrument-sans";
+@import "@fontsource-variable/jetbrains-mono";
 
+/*
+ * Nerox design tokens.
+ * Dark-first graphite surfaces with a cool cast. Violet = brand + primary action.
+ * Cyan = secondary information (links to analysis, forecasts). Amber/red are
+ * reserved for real risk and never used decoratively.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0d0e12;
+  --sidebar: #111217;
+  --panel: #16171d;
+  --raised: #1c1d25;
+  --hover: #22242d;
+  --border: #25272f;
+  --border-strong: #343744;
+
+  --text: #e8e8ee;
+  --muted: #9b9eab;
+  --faint: #6c6f7d;
+
+  --violet: #8b6cf6;
+  --violet-strong: #a58ffb;
+  --violet-soft: rgb(139 108 246 / 0.14);
+  --cyan: #52c1d6;
+  --cyan-soft: rgb(82 193 214 / 0.12);
+
+  --success: #4fb784;
+  --success-soft: rgb(79 183 132 / 0.13);
+  --warning: #e2a73e;
+  --warning-soft: rgb(226 167 62 / 0.13);
+  --danger: #e5564e;
+  --danger-soft: rgb(229 86 78 / 0.13);
+
+  --radius-sm: 5px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-sidebar: var(--sidebar);
+  --color-panel: var(--panel);
+  --color-raised: var(--raised);
+  --color-hover: var(--hover);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-violet: var(--violet);
+  --color-violet-strong: var(--violet-strong);
+  --color-violet-soft: var(--violet-soft);
+  --color-cyan: var(--cyan);
+  --color-cyan-soft: var(--cyan-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-lg);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+::selection {
+  background: var(--violet-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--violet-strong);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+}
+
+/* Component classes live in a layer so Tailwind utilities (w-auto, py-1…) can override them. */
+@layer components {
+.field {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color 120ms;
+}
+.field::placeholder {
+  color: var(--faint);
+}
+.field:hover {
+  border-color: #454857;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px var(--violet-soft);
+}
+.field[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+select.field {
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9eab' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+input[type="date"].field::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+}
+
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
   }
 }
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    transform: translateY(6px) scale(0.98);
+    opacity: 0;
+  }
+}
+.anim-drawer {
+  animation: drawer-in 180ms ease-out;
+}
+.anim-fade {
+  animation: fade-in 140ms ease-out;
+}
+.anim-pop {
+  animation: pop-in 160ms ease-out;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--raised) 25%, var(--hover) 50%, var(--raised) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius-sm);
+}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
