@@ -2,8 +2,8 @@
  * Everything about Nerox as a brand and its owner lives here.
  * Edit this one file to change the details shown on the home, About and Contact pages.
  *
- * Fields marked TODO still hold placeholders. The pages show a clear notice
- * instead of a broken link while a value is empty.
+ * If a contact field is left empty, the pages show a "coming soon" notice
+ * instead of a broken link.
  */
 export const SITE = {
   name: "Nerox",
@@ -15,7 +15,7 @@ export const SITE = {
 
   story: [
     "Most project tools are good at storing tasks and bad at telling you what they mean. You end up with long lists, a deadline, and a feeling that something is about to go wrong.",
-    "Nerox was started to close that gap. It keeps your team's work in one tidy place, then reads it for you: what's late, what's holding other work up, who has too much on their plate, and whether the deadline still looks realistic.",
+    "Nerox was founded by Daluut Warsame to close that gap. It keeps your team's work in one tidy place, then reads it for you: what's late, what's holding other work up, who has too much on their plate, and whether the deadline still looks realistic.",
     "Every warning comes with the reason behind it, so you always know why Nerox is flagging something and what you can do about it.",
   ],
 
@@ -26,14 +26,19 @@ export const SITE = {
   ],
 
   owner: {
-    name: "", // TODO: your full name
-    role: "Founder", // TODO: your role or title
-    bio: "", // TODO: one or two sentences about you
-    linkedin: "", // TODO: https://www.linkedin.com/in/your-profile
+    name: "Daluut Warsame",
+    role: "Founder & Owner",
+    bio: "Daluut is the founder and owner of Nerox, and the mind behind every part of it, from the first idea to the product you're using today.",
+    vision: [
+      "Daluut had a vision: project software shouldn't just hold your work, it should understand it. He watched talented teams miss deadlines not because they lacked skill, but because nobody could see the problem coming until it was too late.",
+      "So he set out to build something better. A workspace that's simple enough to pick up in minutes, smart enough to spot trouble early, and honest enough to always show its reasoning. That vision became Nerox.",
+      "Driven, ambitious and relentlessly focused on the people who use it, Daluut is building Nerox to be the tool he always wished existed, and he's only just getting started.",
+    ],
+    linkedin: "https://www.linkedin.com/in/daluut-warsame/",
   },
 
   contact: {
-    email: "", // TODO: the address people should write to
+    email: "getnerox@gmail.com",
     responseTime: "We usually reply within two working days.",
   },
 } as const;

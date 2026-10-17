@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Activity, ArrowRight, CheckSquare, FolderKanban, GitBranch, GraduationCap, Rocket, Users } from "lucide-react";
 import { SITE } from "@/config/site";
-import { ButtonLink, IconBadge } from "@/components/ui/primitives";
+import { Avatar, ButtonLink, IconBadge } from "@/components/ui/primitives";
+import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 
 const FEATURES = [
   { icon: <FolderKanban className="size-5" />, color: "var(--c-projects)", title: "Plan in minutes", body: "Start from a template, drag tasks across a board, and see everything on a timeline." },
@@ -97,6 +98,30 @@ export default function HomePage() {
               <p className="mt-1 text-[15px] text-muted">{a.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Founder */}
+      <section className="mx-auto max-w-[1180px] px-5 pb-16">
+        <div className="flex flex-col gap-6 rounded-3xl border border-line bg-panel p-8 shadow-card md:flex-row md:items-center">
+          <Avatar name={SITE.owner.name} size={72} />
+          <div className="flex-1">
+            <p className="text-[14px] font-semibold text-violet">Founded by {SITE.owner.name}</p>
+            <p className="mt-1 max-w-2xl text-[19px] font-semibold leading-snug">{SITE.owner.vision[0]}</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href="/about#founder" variant="secondary">
+              Read the story
+            </ButtonLink>
+            <a
+              href={SITE.owner.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#0a66c2] px-5 text-[15px] font-semibold text-white hover:brightness-110"
+            >
+              <LinkedinIcon className="size-4" /> Connect
+            </a>
+          </div>
         </div>
       </section>
 

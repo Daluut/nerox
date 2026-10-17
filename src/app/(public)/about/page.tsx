@@ -55,7 +55,7 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-16" id="founder">
-        <h2 className="text-[24px] font-bold">Meet the founder</h2>
+        <h2 className="text-[24px] font-bold">Meet the founder and owner</h2>
         {owner.name ? (
           <div className="mt-6 flex flex-col gap-6 rounded-2xl border border-line bg-panel p-6 shadow-card sm:flex-row sm:items-center">
             <Avatar name={owner.name} size={84} />
@@ -83,6 +83,22 @@ export default function AboutPage() {
           </p>
         )}
       </section>
+
+      {owner.vision.length > 0 && (
+        <section className="mt-8 overflow-hidden rounded-3xl bg-violet p-8 text-white md:p-12">
+          <p className="text-[15px] font-semibold text-white/75">The vision behind Nerox</p>
+          <div className="mt-4 max-w-3xl space-y-4 text-[18px] leading-relaxed">
+            {owner.vision.map((p, i) => (
+              <p key={i} className={i === 0 ? "text-[22px] font-semibold leading-snug" : "text-white/85"}>
+                {p}
+              </p>
+            ))}
+          </div>
+          <p className="mt-6 text-[15px] font-semibold">
+            {owner.name}, {owner.role}
+          </p>
+        </section>
+      )}
 
       <section className="mt-16 flex flex-col items-start gap-4 rounded-3xl bg-violet-soft p-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
