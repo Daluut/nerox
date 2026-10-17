@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X } from "lucide-react";
+import { BookOpen, Plus, X } from "lucide-react";
 import { createProject } from "@/lib/actions/projects";
+import { getPlanningSuggestions } from "@/lib/actions/memory";
 import { addDays, daysBetween, formatDate } from "@/lib/domain/dates";
 import { TEMPLATES, materialiseTemplate, type MaterialisedTask } from "@/lib/domain/templates";
 import { PRIORITIES, PRIORITY_LABEL, type Priority } from "@/lib/domain/types";
@@ -53,7 +54,22 @@ export function ProjectCreator({
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
+  const [suggestions, setSuggestions] = useState<{ category: string; label: string; multiplier: number; reason: string; affected: string[] }[]>([]);
+  const [applied, setApplied] = useState<string[]>([]);
   const template = TEMPLATES.find((t) => t.id === templateId) ?? null;
+
+  // Memory: lessons from past projects that apply to these tasks.
+  const titleKey = tasks.map((t) => t.title).join("|");
+  useEffect(() => {
+    if (step !== "tasks" || !titleKey) return;
+    let live = true;
+    getPlanningSuggestions(titleKey.split("|"))
+      .then((r) => live && r.ok && setSuggestions(r.data))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [step, titleKey]);
   const span = deadline && startDate ? daysBetween(startDate, deadline) : null;
   const titles = useMemo(() => new Map(tasks.map((t) => [t.key, t.title])), [tasks]);
 
@@ -204,6 +220,29 @@ export function ProjectCreator({
           Edit, remove or add tasks. Due dates, estimates and dependencies are what let Pulse judge whether the project is on track — you can fill them in later.
         </p>
       </div>
+      {suggestions.filter((x) => !applied.includes(x.category)).map((x) => (
+        <div key={x.category} className="flex flex-wrap items-start gap-3 rounded-xl border border-c-memory/40 bg-[color-mix(in_srgb,var(--c-memory)_10%,transparent)] p-4">
+          <BookOpen className="mt-0.5 size-5 shrink-0 text-c-memory" />
+          <div className="min-w-0 flex-1 text-[14px]">
+            <p className="font-semibold">Memory: {x.label.toLowerCase()} has taken {x.multiplier.toFixed(2)}× its estimate before</p>
+            <p className="text-muted">
+              {x.reason} Applies to: {x.affected.join(", ")}.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            onClick={() => {
+              setTasks((ts) => ts.map((t) => (x.affected.includes(t.title) && t.estimateHours ? { ...t, estimateHours: Math.round(t.estimateHours * x.multiplier * 2) / 2 } : t)));
+              setApplied((a) => [...a, x.category]);
+            }}
+          >
+            Adjust estimates
+          </Button>
+          <button onClick={() => setApplied((a) => [...a, x.category])} className="self-center text-[13px] text-muted hover:text-fg">
+            Ignore
+          </button>
+        </div>
+      ))}
       <div className="overflow-x-auto rounded-md border border-line">
         <table className="w-full min-w-[620px] text-[13px]">
           <thead className="bg-raised text-left text-[12px] text-muted">

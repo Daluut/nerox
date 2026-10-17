@@ -6,6 +6,7 @@ import { Panel } from "@/components/ui/primitives";
 import { FactorRow, HealthStrip, ScoreBlock } from "./health";
 import { RiskCard } from "./risk-card";
 import { HealthTrend } from "./trend";
+import { PulseExplainer } from "./pulse-explainer";
 
 /** The full Pulse analysis for one project. Everything shown is derived from `assessment` and stored snapshots. */
 export function PulseReport({
@@ -125,14 +126,7 @@ export function PulseReport({
           </Panel>
         )}
 
-        <details className="rounded-lg border border-line bg-panel px-4 py-3 text-[12px] text-muted">
-          <summary className="cursor-pointer text-[13px] font-medium text-fg">How the score is calculated</summary>
-          <div className="mt-2 space-y-2">
-            <p>Each factor is scored 0–100, where 100 is healthy. The health score is their weighted average. Factors that can&apos;t be measured are left out and the remaining weights are scaled up; the confidence level reflects how much was left out.</p>
-            <p>Bands: 80+ healthy, 60–79 needs attention, 40–59 at risk, below 40 critical. Weights are product defaults, adjustable by admins in Settings.</p>
-            <p>Every risk is labelled as observed (a fact), rule-based (a deterministic check) or a forecast (an extrapolation). No AI is used to produce the score.</p>
-          </div>
-        </details>
+        <PulseExplainer />
       </div>
     </div>
   );

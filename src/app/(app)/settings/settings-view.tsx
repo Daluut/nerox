@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { deleteWorkspace, updateProfile, updatePulseWeights, updateWorkspace } from "@/lib/actions/workspace";
-import { DEFAULT_CONFIG, FACTOR_KEYS, FACTOR_LABEL, type FactorKey } from "@/lib/pulse/config";
+import { DEFAULT_CONFIG, FACTOR_KEYS, FACTOR_LABEL, FACTOR_QUESTION, type FactorKey } from "@/lib/pulse/config";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { Button, ErrorNote, Field, PageHeader, Panel } from "@/components/ui/primitives";
 import { ThemePicker } from "@/components/ui/theme-picker";
@@ -43,6 +43,18 @@ export function SettingsView(props: {
   return (
     <div className="mx-auto flex max-w-[760px] flex-col gap-6 px-4 py-8 md:px-10">
       <PageHeader title="Settings" description="Your profile, colours and workspace." icon={<SettingsIcon className="size-6" />} color="var(--c-about)" />
+
+      <Panel title="Your plan">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-[18px] font-bold">Free <span className="ml-1 rounded-full bg-success-soft px-2 py-0.5 text-[12px] font-semibold text-success">Early access</span></p>
+            <p className="mt-1 text-[14px] text-muted">Every feature is included while Nerox is in early access. Pro, Business and Enterprise plans are coming for larger teams.</p>
+          </div>
+          <a href="/pricing" className="inline-flex h-11 items-center rounded-xl bg-violet px-5 text-[15px] font-semibold text-white hover:bg-violet-strong">
+            See plans
+          </a>
+        </div>
+      </Panel>
 
       <Panel title="Colours">
         <p className="mb-4 text-[14px] text-muted">Pick how Nerox looks on this device.</p>
@@ -98,13 +110,28 @@ export function SettingsView(props: {
       </Panel>
 
       <Panel title="Pulse weighting">
-        <p className="mb-4 text-[13px] text-muted">
-          How much each factor counts toward a project&apos;s health score. These are starting defaults, not established science — adjust them if your team cares more about some signals than others. Weights are relative; they don&apos;t need to add up to 100.
-        </p>
-        <ul className="flex flex-col gap-3">
+        <div className="mb-5 space-y-3 text-[14px] text-muted">
+          <p>
+            <span className="font-semibold text-fg">What this is:</span> each project&apos;s health score (0 to 100) is built from seven checks. These sliders decide how much each check counts
+            towards that score.
+          </p>
+          <p>
+            <span className="font-semibold text-fg">How to use it:</span> slide a check up if it really matters to your team, and down (even to zero) if it doesn&apos;t. The percentage on the right is
+            that check&apos;s share of the score. For example, a student team with a hard hand-in date might turn up &ldquo;Deadline feasibility&rdquo;; a team without set roles might turn down
+            &ldquo;Workload balance&rdquo;.
+          </p>
+          <p>
+            <span className="font-semibold text-fg">What it doesn&apos;t change:</span> Pulse still finds and lists the same risks. Weighting only changes how the final number is added up. If you&apos;re
+            not sure, leave the defaults.
+          </p>
+        </div>
+        <ul className="flex flex-col gap-4">
           {FACTOR_KEYS.map((k) => (
-            <li key={k} className="grid grid-cols-[1fr_140px_44px] items-center gap-3 text-[13px]">
-              <label htmlFor={`w-${k}`}>{FACTOR_LABEL[k]}</label>
+            <li key={k} className="grid grid-cols-[1fr_120px_44px] items-center gap-3 sm:grid-cols-[1fr_160px_48px]">
+              <label htmlFor={`w-${k}`}>
+                <span className="block text-[15px] font-semibold">{FACTOR_LABEL[k]}</span>
+                <span className="block text-[13px] text-muted">{FACTOR_QUESTION[k]}</span>
+              </label>
               <input
                 id={`w-${k}`}
                 type="range"
@@ -116,7 +143,7 @@ export function SettingsView(props: {
                 onChange={(e) => setWeights({ ...weights, [k]: Number(e.target.value) })}
                 className="accent-[var(--violet)]"
               />
-              <span className="num text-right text-muted">{total ? Math.round((weights[k] / total) * 100) : 0}%</span>
+              <span className="num text-right text-[15px] font-semibold">{total ? Math.round((weights[k] / total) * 100) : 0}%</span>
             </li>
           ))}
         </ul>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 import { Mail } from "lucide-react";
 import { SITE } from "@/config/site";
+import { INSTAGRAM_GRADIENT, InstagramIcon } from "@/components/ui/instagram-icon";
 import { IconBadge } from "@/components/ui/primitives";
 import { ContactForm } from "./contact-form";
 
@@ -50,8 +51,24 @@ export default function ContactPage() {
               <p className="mt-3 text-[14px] text-faint">LinkedIn profile coming soon.</p>
             )}
           </div>
+          <div className="rounded-2xl border border-line bg-panel p-6 shadow-card">
+            <span className="flex size-11 items-center justify-center rounded-xl text-white" style={{ background: INSTAGRAM_GRADIENT }}>
+              <InstagramIcon className="size-5" />
+            </span>
+            <p className="mt-4 text-[18px] font-semibold">Instagram</p>
+            <p className="mt-1 text-[15px] text-muted">Follow @{SITE.instagram.handle} for updates, new features and behind the scenes.</p>
+            <a
+              href={SITE.instagram.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[15px] font-semibold text-white hover:brightness-110"
+              style={{ background: INSTAGRAM_GRADIENT }}
+            >
+              <InstagramIcon className="size-4" /> Follow on Instagram
+            </a>
+          </div>
         </div>
-        <div className="rounded-2xl border border-line bg-panel p-6 shadow-card md:p-8">
+        <div className="self-start rounded-2xl border border-line bg-panel p-6 shadow-card md:p-8">
           <h2 className="text-[22px] font-bold">Send us a message</h2>
           {email ? (
             <ContactForm email={email} />

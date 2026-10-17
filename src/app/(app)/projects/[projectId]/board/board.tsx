@@ -29,7 +29,9 @@ export function Board({ projectId, cards: initial }: { projectId: string; cards:
   const [cards, setCards] = useState(initial);
   const [dragging, setDragging] = useState<Card | null>(null);
   const [createIn, setCreateIn] = useState<TaskStatus | null>(null);
-  useEffect(() => setCards(initial), [initial]);
+  useEffect(() => {
+    setCards(initial);
+  }, [initial]);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor));
 
   const columns = useMemo(

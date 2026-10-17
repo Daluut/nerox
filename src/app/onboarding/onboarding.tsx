@@ -27,7 +27,9 @@ export function Onboarding({ name, userId, today, startAtProject }: { name: stri
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (tz) setTimezone(tz);
   }, []);
-  useEffect(() => setLocalToday(todayInTimeZone(timezone)), [timezone]);
+  useEffect(() => {
+    setLocalToday(todayInTimeZone(timezone));
+  }, [timezone]);
 
   async function saveWorkspace() {
     setBusy(true);

@@ -52,7 +52,8 @@ export type RiskActionKind =
   | "add_estimate"
   | "review_dependencies"
   | "open_milestones"
-  | "open_list";
+  | "open_list"
+  | "simulate";
 
 export interface RiskAction {
   kind: RiskActionKind;

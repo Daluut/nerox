@@ -14,6 +14,7 @@ const PASSWORD = "correct-horse-1";
 const day = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
 const ok = (s) => console.log("✓", s);
 const browsers = [];
+const pageErrors = [];
 
 async function page({ mobile = false } = {}) {
   // One browser per user keeps sessions strictly separate.
@@ -21,7 +22,10 @@ async function page({ mobile = false } = {}) {
   browsers.push(b);
   const c = await b.newContext(mobile ? { viewport: { width: 390, height: 844 } } : { viewport: { width: 1440, height: 900 } });
   const p = await c.newPage();
-  p.on("pageerror", (e) => console.log("  [pageerror]", e.message));
+  p.on("pageerror", (e) => {
+    console.log("  [pageerror]", e.message);
+    pageErrors.push(e.message);
+  });
   return p;
 }
 
@@ -35,7 +39,7 @@ async function handleTour(p, { walk = false } = {}) {
     return true;
   }
   await start.click();
-  for (let i = 0; i < 12 && !(await p.locator("text=You're all set").isVisible()); i++) await p.getByRole("button", { name: /^Next/ }).click();
+  for (let i = 0; i < 20 && !(await p.locator("text=You're all set").isVisible()); i++) await p.getByRole("button", { name: /^Next/ }).click();
   await p.click("text=Start using Nerox");
   return true;
 }
@@ -137,12 +141,40 @@ async function main() {
   if (!/is overdue/.test(pulse)) throw new Error("Pulse did not report overdue template work");
   ok("Pulse shows an explained risk with evidence");
 
-  // 11–12. What If? and Memory are honest about being unbuilt.
+  // 11. What If?: simulate a delay, save it, then apply it after confirming.
   await ana.goto(`${BASE}/what-if`);
-  await ana.waitForSelector("text=What If? isn't available yet");
+  await ana.waitForSelector("text=Your scenario");
+  const apiValue = await ana.locator("#wi-task option", { hasText: "Implement API" }).first().getAttribute("value");
+  await ana.selectOption("#wi-task", apiValue);
+  await ana.fill("#wi-days", "4");
+  await ana.click("text=Add this change");
+  await ana.waitForSelector("text=Tasks that would move");
+  const moved = await ana.locator("main").textContent();
+  if (!/Waits on “Implement API”/.test(moved)) throw new Error("What If? didn't propagate the delay to dependent tasks");
+  ok("What If? shows a delay rippling through dependent tasks");
+  await ana.fill("#wi-save", "API four days late");
+  await ana.click("button:has-text('Save')");
+  await ana.waitForSelector("text=Scenario saved.");
+  await ana.click("button:has-text('Apply to project')");
+  await ana.waitForSelector("text=Apply this scenario to the real project?");
+  await ana.click("button:has-text('Apply changes')");
+  await ana.waitForSelector("text=Scenario applied.");
+  await ana.waitForSelector("text=Applied", { timeout: 15000 });
+  ok("scenario saved, then applied only after confirmation");
+
+  // 12. Memory explains itself and shows retrospectives.
   await ana.goto(`${BASE}/memory`);
-  await ana.waitForSelector("text=History recorded in this workspace so far");
-  ok("planned features are labelled as not available");
+  await ana.waitForSelector("text=How Memory works");
+  await ana.goto(`${BASE}/memory?tab=retros`);
+  await ana.waitForSelector("text=What went well");
+  ok("Memory page and retrospectives load");
+
+  // Nerox AI answers from the help guide.
+  await ana.click("button[aria-label='Ask Nerox AI']");
+  await ana.click("text=What does Pulse do?");
+  await ana.waitForSelector("text=From the Nerox help guide");
+  ok("Nerox AI answers a question");
+  await ana.click("button[aria-label='Ask Nerox AI']");
 
   // 13. Data persists after refresh, and outsiders can't reach it.
   await ana.goto(`${project}/list`);
@@ -163,6 +195,15 @@ async function main() {
   if ((await eve.textContent("body")).includes("Prepare demo video")) throw new Error("cross-workspace access");
   ok("data persists; another workspace's user can't open the project by URL");
 
+  // Public pages.
+  const visitor = await page();
+  await visitor.goto(`${BASE}/pricing`);
+  await visitor.waitForSelector("text=Free to start. Room to grow.");
+  await visitor.goto(`${BASE}/about`);
+  await visitor.waitForSelector("text=Why Nerox is different");
+  await visitor.waitForSelector("a[href='https://www.instagram.com/neroxhq/']");
+  ok("public pricing and About pages load, with Instagram links");
+
   // Mobile smoke test.
   const m = await page({ mobile: true });
   await m.goto(`${BASE}/login`);
@@ -176,7 +217,10 @@ async function main() {
 }
 
 main()
-  .then(() => console.log("\nAll end-to-end checks passed."))
+  .then(() => {
+    if (pageErrors.length) throw new Error(`${pageErrors.length} uncaught page error(s): ${pageErrors[0]}`);
+    console.log("\nAll end-to-end checks passed.");
+  })
   .catch((e) => {
     console.error("✗", e.message);
     process.exitCode = 1;

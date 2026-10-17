@@ -10,7 +10,7 @@ export function friendlyError(error: { message?: string; code?: string } | null 
   const msg = error.message ?? "";
   if (error.code === "42501" || /row-level security/i.test(msg)) return "You don't have permission to do that.";
   // Messages raised deliberately by our triggers/functions are written for people.
-  const coded = /^(circular_dependency|invitation_\w+):\s*(.+)$/.exec(msg);
+  const coded = /^(circular_dependency|invitation_\w+|scenario_stale):\s*(.+)$/.exec(msg);
   if (coded) return coded[2].charAt(0).toUpperCase() + coded[2].slice(1) + ".";
   if (error.code === "22023" || (error.code === "23514" && !/violates check constraint/.test(msg)) || error.code === "23503") {
     return msg.endsWith(".") ? msg : `${msg}.`;

@@ -501,6 +501,7 @@ function detectRisks(
     const actions: Risk["actions"] = [{ kind: "open_task", label: "Open task", taskId: t.id }];
     if (!t.assigneeId) actions.push({ kind: "assign", label: "Assign someone", taskId: t.id });
     actions.push({ kind: "reschedule", label: "Update due date", taskId: t.id });
+    if (downstream.length) actions.push({ kind: "simulate", label: "See the knock-on effect in What If?", taskId: t.id });
     risks.push({
       id: `overdue:${t.id}`,
       kind: "overdue_task",

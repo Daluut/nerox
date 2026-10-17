@@ -23,6 +23,17 @@ export const FACTOR_LABEL: Record<FactorKey, string> = {
   milestones: "Milestone progress",
 };
 
+/** The question each factor answers, in plain words. */
+export const FACTOR_QUESTION: Record<FactorKey, string> = {
+  pace: "Are we as far along as we should be by now?",
+  overdue: "Are tasks past their due date, especially ones that block other work?",
+  feasibility: "At the speed we're going, will we finish before the deadline?",
+  dependencies: "Is work stuck waiting on other late or unstarted work?",
+  workload: "Is one person carrying much more than everyone else?",
+  stalled: "Have any tasks stopped moving?",
+  milestones: "Are we hitting our checkpoints?",
+};
+
 export interface PulseConfig {
   weights: Record<FactorKey, number>;
   /** Lower bounds of each status band. Below `atRisk` is critical. */

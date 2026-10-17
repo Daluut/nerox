@@ -35,7 +35,25 @@ const STEPS: Step[] = [
     body: "Pulse gives each project a health score and explains it: what's late, what's blocking other work, and who has too much on.",
     color: "var(--c-pulse)",
   },
+  {
+    target: "nav-whatif",
+    title: "What If? lets you test changes safely",
+    body: "Worried a task will run late, or someone will be off? Try it here first and see which dates move. Nothing changes until you say so.",
+    color: "var(--c-whatif)",
+  },
+  {
+    target: "nav-memory",
+    title: "Memory learns from finished work",
+    body: "As tasks get done, Memory spots patterns, like testing always taking longer than planned, and helps you estimate better next time.",
+    color: "var(--c-memory)",
+  },
   { target: "nav-team", title: "Bring your team", body: "Invite people with a link and choose what they can do.", color: "var(--c-team)" },
+  {
+    target: "ai",
+    title: "Stuck? Ask Nerox AI",
+    body: "Ask how anything works, or why a project is flagged. It's always in this corner.",
+    color: "var(--violet)",
+  },
   { target: "theme", title: "Make it yours", body: "Switch between Light, Dark and our own Nerox colours at any time.", color: "var(--violet)" },
   { title: "You're all set", body: "You can replay this tour from the question-mark button at the top of the page." },
 ];

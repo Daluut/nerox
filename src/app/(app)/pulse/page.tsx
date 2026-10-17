@@ -6,11 +6,12 @@ import { loadAcknowledgements, loadWorkspaceBundles, recordSnapshots } from "@/l
 import { isActiveProject } from "@/lib/data/views";
 import { SEVERITY_RANK } from "@/lib/pulse/types";
 import { HealthStrip } from "@/components/pulse/health";
+import { PulseExplainer } from "@/components/pulse/pulse-explainer";
 import { RiskCard } from "@/components/pulse/risk-card";
 import { HealthBadge } from "@/components/ui/badges";
 import { ButtonLink, EmptyState, PageHeader } from "@/components/ui/primitives";
 
-export const metadata: Metadata = { title: "Nerox Pulse" };
+export const metadata: Metadata = { title: "Pulse" };
 
 export default async function PulsePage() {
   const ctx = await getAppContext();
@@ -31,6 +32,9 @@ export default async function PulsePage() {
         icon={<Activity className="size-6" />}
         color="var(--c-pulse)"
       />
+      <div className="mt-6">
+        <PulseExplainer open={!active.some((b) => b.assessment.score !== null)} />
+      </div>
 
       {!active.length ? (
         <EmptyState className="mt-6" icon={<Activity className="size-5" />} title="No active projects to assess" action={<ButtonLink href="/projects/new" variant="primary" size="sm">Create a project</ButtonLink>}>

@@ -17,6 +17,7 @@ export interface ClientAppData {
   unreadCount: number;
   realtime: boolean;
   tourDone: boolean;
+  aiEnabled: boolean;
 }
 
 const Ctx = createContext<ClientAppData | null>(null);

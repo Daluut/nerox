@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/about", "/contact"];
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/about", "/contact", "/pricing"];
 
 /** Refreshes the Supabase session on every request and guards app routes. */
 export async function middleware(request: NextRequest) {

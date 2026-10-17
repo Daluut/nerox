@@ -207,6 +207,7 @@ function TaskPanel({ taskId, onClose }: { taskId: string; onClose: () => void })
           </Prop>
           <Prop label="Actual effort">
             <NumberField value={t.actualHours} disabled={!editable} suffix="hours" min={0} onSave={(v) => save("actual", { actualHours: v })} />
+            {done && t.actualHours == null && editable && <p className="mt-1 text-[12px] text-c-memory">How long did it really take? Memory uses this to improve future estimates.</p>}
           </Prop>
           {detail.milestones.length > 0 && (
             <Prop label="Milestone">
@@ -288,7 +289,9 @@ function Prop({ label, children }: { label: string; children: React.ReactNode })
 
 function EditableTitle({ value, disabled, onSave }: { value: string; disabled: boolean; onSave: (v: string) => Promise<boolean | undefined> }) {
   const [v, setV] = useState(value);
-  useEffect(() => setV(value), [value]);
+  useEffect(() => {
+    setV(value);
+  }, [value]);
   const commit = async () => {
     const next = v.trim();
     if (!next) return setV(value);
@@ -316,7 +319,9 @@ function EditableTitle({ value, disabled, onSave }: { value: string; disabled: b
 
 function NumberField({ value, disabled, suffix, min, onSave }: { value: number | null; disabled: boolean; suffix: string; min: number; onSave: (v: number | null) => void }) {
   const [v, setV] = useState(value?.toString() ?? "");
-  useEffect(() => setV(value?.toString() ?? ""), [value]);
+  useEffect(() => {
+    setV(value?.toString() ?? "");
+  }, [value]);
   return (
     <div className="flex items-center gap-2">
       <input
@@ -339,7 +344,9 @@ function NumberField({ value, disabled, suffix, min, onSave }: { value: number |
 
 function DescriptionField({ value, disabled, onSave }: { value: string; disabled: boolean; onSave: (v: string) => void }) {
   const [v, setV] = useState(value);
-  useEffect(() => setV(value), [value]);
+  useEffect(() => {
+    setV(value);
+  }, [value]);
   return (
     <textarea
       className="field min-h-[96px] resize-y leading-relaxed"

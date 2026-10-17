@@ -2,7 +2,7 @@
 
 An intelligent project workspace: organise work, see each project's health with the evidence behind it, and catch knock-on effects before a deadline slips.
 
-This repository contains **Phase 1 (functional foundation)** and **Phase 2 (Nerox Pulse)** from the product brief. What If? (Phase 3) and Memory (Phase 4) are not built yet; their pages say so plainly.
+This repository contains the functional foundation plus Nerox's four signature features: **Pulse** (project health), **What If?** (try a change before you make it), **Memory** (learning from finished projects) and **Nerox AI** (in-app help).
 
 ## Stack
 
@@ -14,7 +14,7 @@ This repository contains **Phase 1 (functional foundation)** and **Phase 2 (Nero
 
 ## Your brand details
 
-Everything shown on the public **home**, **About us** and **Contact** pages comes from one file: `src/config/site.ts`. Fill in your name, role, short bio, LinkedIn URL and contact email there. Until you do, those pages show a clear "coming soon" notice instead of broken links.
+Everything shown on the public **home**, **About us**, **Pricing** and **Contact** pages comes from one file: `src/config/site.ts`: the brand story, what makes Nerox different, the founder's bio and quote, LinkedIn, Instagram (@neroxhq), contact email and the plans and prices. Edit that file to change any of it.
 
 ## What's implemented
 
@@ -51,7 +51,24 @@ Everything shown on the public **home**, **About us** and **Contact** pages come
 - Velocity-based finish forecast only when there's enough history, labelled as an extrapolation.
 - One stored snapshot per project per day for history; trends only draw from stored snapshots.
 - Risks can be acknowledged (recorded, still counted in the score).
-- Admins can adjust weights in Settings.
+- Admins can adjust weights in Settings, with a plain-English explanation of what each weight means and what it doesn't change.
+- Risks that block other work link straight to a What If? simulation of the delay.
+
+**What If?** (`src/lib/whatif/`)
+- Build a scenario from one or more changes: a task runs late, takes longer, finishes early, changes hands, someone is away, or the deadline moves.
+- Delays follow dependency links (using any slack before the next task starts), and the results show which tasks move, the new finish date against the deadline, affected milestones, workload changes and the health score before and after.
+- Scenarios can be saved and are re-run on current data when opened. **Apply** writes all the date and assignee changes in one database transaction, and refuses if the project changed since the simulation ran.
+
+**Memory** (`src/lib/memory/`)
+- Learns from completed projects: how long kinds of work (testing, design, writing…) really take compared with estimates, which kinds of work tend to finish late or block others, and how close projects land to their deadlines.
+- A lesson only appears with enough evidence (at least 5 tasks across 2 projects) and always shows how many tasks it is based on. Lessons can be dismissed.
+- Editable retrospectives per finished project, and estimate suggestions when creating a new project.
+
+**Nerox AI** (`src/lib/ai/`, `src/lib/actions/ai.ts`)
+- A floating "Ask Nerox AI" helper on every page. With `ANTHROPIC_API_KEY` set it answers using Claude with context about the current page and the person's projects; without a key it answers from the built-in help guide. Answers are labelled with where they came from. Rate limited per user.
+
+**Plans**
+- A public Pricing page (Free, Pro, Business, Enterprise) and a "Your plan" panel in Settings. Everyone is on Free with every feature during early access; paid plans show "Coming soon" with a "Register interest" email link.
 
 ## Setup
 
@@ -64,7 +81,8 @@ Create a project at [supabase.com](https://supabase.com) (or run locally with th
 npx supabase link --project-ref <your-project-ref>
 npx supabase db push
 
-# Option B: paste supabase/migrations/20261017000000_init.sql into the SQL editor and run it
+# Option B: in the SQL editor, run each file in supabase/migrations/ in order:
+#   20261017000000_init.sql, then 20261018000000_whatif_memory.sql
 ```
 
 In the Supabase dashboard:
@@ -91,6 +109,8 @@ Without Supabase credentials the app shows a setup page instead of pretending to
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | Supabase anon key (public; RLS protects data) |
 | `NEXT_PUBLIC_SITE_URL` | recommended | Public app URL for invite links and auth email redirects. Falls back to the request host. |
 | `NEXT_PUBLIC_REALTIME` | no | `off` disables live updates |
+| `ANTHROPIC_API_KEY` | no | Turns on AI answers in Nerox AI. Server-only; never exposed to the browser. |
+| `NEROX_AI_MODEL` | no | Claude model for Nerox AI (default `claude-haiku-5-5`) |
 
 No service-role key is used anywhere; every query runs as the signed-in user.
 
@@ -99,7 +119,7 @@ No service-role key is used anywhere; every query runs as the signed-in user.
 ```bash
 npm run typecheck
 npm run lint
-npm run test:unit   # dates, dependency graph, permissions, progress, templates, Pulse scenarios
+npm run test:unit   # dates, dependency graph, permissions, progress, templates, Pulse, What If?, Memory, help search
 npm run test:db     # applies the real migration to an in-process Postgres (PGlite) and tests RLS,
                     # workspace isolation, triggers, invitations, roles, notifications, snapshots
 npm run test:e2e    # full workflow in a browser against a running app (see below)
@@ -111,7 +131,7 @@ The end-to-end test needs the app running against a Supabase project with email 
 E2E_BASE_URL=http://localhost:3000 npm run test:e2e
 ```
 
-It registers, creates a workspace and a templated project, invites a second user who signs up through the link, assigns work (and checks the notification), checks cycle prevention, completes a task, moves a board card and confirms it persists, reads Pulse, checks that another workspace's user can't open the project by URL, and exercises the mobile navigation.
+It registers, creates a workspace and a templated project, invites a second user who signs up through the link, assigns work (and checks the notification), checks cycle prevention, completes a task, moves a board card and confirms it persists, reads Pulse, takes the tour, runs, saves and applies a What If? scenario, opens Memory, asks Nerox AI, checks that another workspace's user can't open the project by URL, and exercises the mobile navigation.
 
 ## Deploying
 
@@ -127,6 +147,10 @@ Any Next.js host works; Vercel is the simplest:
 supabase/migrations/      schema, RLS policies, triggers, transactional functions
 src/lib/domain/           pure domain logic: dates, dependency graph, permissions, progress, templates
 src/lib/pulse/            the Pulse engine (config, types, engine)
+src/lib/whatif/           the What If? simulation engine
+src/lib/memory/           the Memory learning engine
+src/lib/ai/               Nerox AI help guide and search
+src/config/site.ts        brand, founder, socials, plans and prices
 src/lib/data/             session/workspace context, queries, row mappers, shared view shapes
 src/lib/actions/          server actions — every write is validated with Zod and runs under RLS
 src/components/           design system (ui/), app shell, tasks, projects, Pulse
@@ -136,8 +160,11 @@ tests/unit, tests/db, tests/e2e
 
 ## Known limitations
 
-- **What If?** (scenario simulation) and **Nerox Memory** (learning from completed projects) are not built. Their pages explain what they'll do and, for Memory, show how much real history has been recorded.
-- **Conversation-to-tasks** and any AI-generated summaries are not built. Nothing in the app uses an LLM.
+- **Paid plans can't be bought yet.** There's no payment provider (e.g. Stripe) or plan enforcement; prices in `src/config/site.ts` are placeholders, and "Register interest" opens an email.
+- **Nerox AI** needs an `ANTHROPIC_API_KEY` for free-form answers; without one it matches questions against the help guide. Its rate limit is kept in memory per server instance.
+- **What If?** treats task dates as calendar days (no weekends or holidays) and doesn't model individual capacity. Moving due dates later can raise the health score because fewer tasks count as overdue; the page explains this when it happens.
+- **Memory** recognises kinds of work from keywords in task titles, and needs actual effort recorded on completed tasks for estimate lessons.
+- **Conversation-to-tasks** isn't built.
 - Pulse's dependency factor is a **simplified heuristic** (blocked chains, impossible orderings, unstarted bottlenecks), not critical-path analysis. Individual **capacity isn't tracked**, so workload balance compares outstanding work only. Weights and thresholds are product defaults, not empirically validated.
 - Pulse history is recorded when a project is viewed (one snapshot per day); days nobody opens the project have no snapshot. A scheduled job would fill those in.
 - Board columns are the five fixed statuses; within a column, cards sort by priority then due date (no manual ordering).

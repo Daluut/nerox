@@ -15,7 +15,9 @@ export function NotificationBell({ initialUnread }: { initialUnread: number }) {
   const [unread, setUnread] = useState(initialUnread);
   const root = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setUnread(initialUnread), [initialUnread]);
+  useEffect(() => {
+    setUnread(initialUnread);
+  }, [initialUnread]);
   useEffect(() => {
     if (!open) return;
     setFailed(false);

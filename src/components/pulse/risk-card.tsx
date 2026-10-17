@@ -21,6 +21,8 @@ function actionHref(projectId: string, a: RiskAction) {
       return `/projects/${projectId}#milestones`;
     case "open_list":
       return `/projects/${projectId}/list`;
+    case "simulate":
+      return `/what-if?project=${projectId}&delay=${a.taskId}`;
   }
 }
 

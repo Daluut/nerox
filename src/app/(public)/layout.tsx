@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 import { Mail } from "lucide-react";
 import { SITE } from "@/config/site";
+import { InstagramIcon } from "@/components/ui/instagram-icon";
 import { createClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/shell/logo";
 import { ButtonLink } from "@/components/ui/primitives";
@@ -31,6 +32,9 @@ export default async function PublicLayout({ children }: { children: React.React
             <Link href="/about" className="rounded-lg px-3 py-2 text-muted hover:bg-hover hover:text-fg">
               About us
             </Link>
+            <Link href="/pricing" className="rounded-lg px-3 py-2 text-muted hover:bg-hover hover:text-fg">
+              Pricing
+            </Link>
             <Link href="/contact" className="rounded-lg px-3 py-2 text-muted hover:bg-hover hover:text-fg">
               Contact
             </Link>
@@ -58,6 +62,9 @@ export default async function PublicLayout({ children }: { children: React.React
           </Link>
           <Link href="/about" className="rounded-lg px-3 py-1.5 text-muted">
             About us
+          </Link>
+          <Link href="/pricing" className="rounded-lg px-3 py-1.5 text-muted">
+            Pricing
           </Link>
           <Link href="/contact" className="rounded-lg px-3 py-1.5 text-muted">
             Contact
@@ -90,6 +97,11 @@ export default async function PublicLayout({ children }: { children: React.React
                 </Link>
               </li>
               <li>
+                <Link href="/pricing" className="hover:text-fg">
+                  Plans and pricing
+                </Link>
+              </li>
+              <li>
                 <Link href="/signup" className="hover:text-fg">
                   Create an account
                 </Link>
@@ -99,6 +111,11 @@ export default async function PublicLayout({ children }: { children: React.React
           <div>
             <p className="text-[14px] font-semibold">Connect</p>
             <ul className="mt-3 space-y-2 text-[14px] text-muted">
+              <li>
+                <a href={SITE.instagram.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-fg">
+                  <InstagramIcon className="size-4" /> Instagram @{SITE.instagram.handle}
+                </a>
+              </li>
               {SITE.owner.linkedin && (
                 <li>
                   <a href={SITE.owner.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-fg">

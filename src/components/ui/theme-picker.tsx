@@ -19,7 +19,9 @@ export function applyTheme(t: ThemeId) {
 /** Light / Dark / Nerox. Saved on this device and applied instantly. */
 export function ThemePicker({ compact = false }: { compact?: boolean }) {
   const [theme, setTheme] = useState<ThemeId>(DEFAULT_THEME);
-  useEffect(() => setTheme(currentTheme()), []);
+  useEffect(() => {
+    setTheme(currentTheme());
+  }, []);
 
   if (compact) {
     return (

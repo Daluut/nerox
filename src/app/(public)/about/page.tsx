@@ -3,9 +3,12 @@ import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 import Link from "next/link";
 import { Heart, Sparkles, Target, Users } from "lucide-react";
 import { SITE } from "@/config/site";
+import { FollowInstagram } from "@/components/projects/follow-instagram";
 import { Avatar, ButtonLink, IconBadge } from "@/components/ui/primitives";
 
 export const metadata: Metadata = { title: "About us" };
+
+const DIFF_COLORS = ["var(--c-pulse)", "var(--c-whatif)", "var(--c-memory)", "var(--violet)", "var(--c-projects)", "var(--c-tasks)"];
 
 const VALUE_STYLE = [
   { icon: <Sparkles className="size-5" />, color: "var(--c-home)" },
@@ -54,6 +57,24 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="mt-16">
+        <h2 className="text-[24px] font-bold">Why Nerox is different</h2>
+        <p className="mt-2 max-w-2xl text-[16px] text-muted">Plenty of tools can hold a to-do list. Nerox is built to help you finish.</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {SITE.differentiators.map((d, i) => (
+            <div key={d.title} className="flex gap-4 rounded-2xl border border-line bg-panel p-6 shadow-card">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl text-[16px] font-bold text-white" style={{ background: DIFF_COLORS[i % DIFF_COLORS.length] }}>
+                {i + 1}
+              </span>
+              <div>
+                <p className="text-[17px] font-semibold">{d.title}</p>
+                <p className="mt-1 text-[15px] text-muted">{d.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mt-16" id="founder">
         <h2 className="text-[24px] font-bold">Meet the founder and owner</h2>
         {owner.name ? (
@@ -65,6 +86,12 @@ export default function AboutPage() {
                 {owner.role}, {SITE.name}
               </p>
               {owner.bio && <p className="mt-2 max-w-xl text-[16px] text-muted">{owner.bio}</p>}
+              {owner.quote && (
+                <blockquote className="mt-4 max-w-xl border-l-4 border-violet pl-4">
+                  <p className="text-[18px] italic leading-relaxed text-fg">&ldquo;{owner.quote}&rdquo;</p>
+                  <footer className="mt-2 text-[14px] font-semibold text-muted">{owner.name}</footer>
+                </blockquote>
+              )}
             </div>
             {owner.linkedin && (
               <a
@@ -100,7 +127,9 @@ export default function AboutPage() {
         </section>
       )}
 
-      <section className="mt-16 flex flex-col items-start gap-4 rounded-3xl bg-violet-soft p-8 sm:flex-row sm:items-center sm:justify-between">
+      <FollowInstagram className="mt-16" />
+
+      <section className="mt-8 flex flex-col items-start gap-4 rounded-3xl bg-violet-soft p-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[20px] font-bold">Want to say hello?</p>
           <p className="text-[16px] text-muted">Questions, feedback or ideas are all welcome.</p>

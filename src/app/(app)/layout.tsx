@@ -27,6 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     unreadCount: count ?? 0,
     realtime: process.env.NEXT_PUBLIC_REALTIME !== "off",
     tourDone: !!(profile?.preferences as { tour_done?: boolean } | null)?.tour_done,
+    aiEnabled: !!process.env.ANTHROPIC_API_KEY,
   };
   return (
     <AppDataProvider value={data}>

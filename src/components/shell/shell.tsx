@@ -12,6 +12,7 @@ import {
   CircleHelp,
   FolderKanban,
   Home,
+  Gem,
   Info,
   LogOut,
   Mail,
@@ -31,12 +32,15 @@ import { Logo } from "./logo";
 import { CommandPalette } from "./command-palette";
 import { NotificationBell } from "./notifications";
 import { Tour } from "./tour";
+import { NeroxAI } from "./nerox-ai";
 import { QuickCreateTask } from "@/components/tasks/quick-create";
 import { Avatar, Button, ErrorNote, Field } from "@/components/ui/primitives";
 import { Dialog } from "@/components/ui/dialog";
 import { Menu } from "@/components/ui/menu";
 import { ThemePicker } from "@/components/ui/theme-picker";
 import { cn } from "@/components/ui/cn";
+import { INSTAGRAM_GRADIENT, InstagramIcon } from "@/components/ui/instagram-icon";
+import { SITE } from "@/config/site";
 
 type NavItem = { href: string; label: string; icon: typeof Home; color: string; soon?: boolean; tour?: string };
 
@@ -53,8 +57,8 @@ const SECTIONS: { heading?: string; items: NavItem[] }[] = [
     heading: "Insights",
     items: [
       { href: "/pulse", label: "Pulse", icon: Activity, color: "var(--c-pulse)", tour: "nav-pulse" },
-      { href: "/what-if", label: "What If?", icon: Split, color: "var(--c-whatif)", soon: true },
-      { href: "/memory", label: "Memory", icon: BookOpen, color: "var(--c-memory)", soon: true },
+      { href: "/what-if", label: "What If?", icon: Split, color: "var(--c-whatif)", tour: "nav-whatif" },
+      { href: "/memory", label: "Memory", icon: BookOpen, color: "var(--c-memory)", tour: "nav-memory" },
     ],
   },
   {
@@ -68,6 +72,7 @@ const SECTIONS: { heading?: string; items: NavItem[] }[] = [
     heading: "Nerox",
     items: [
       { href: "/about", label: "About us", icon: Info, color: "var(--c-about)" },
+      { href: "/pricing", label: "Plans & pricing", icon: Gem, color: "var(--c-memory)" },
       { href: "/contact", label: "Contact", icon: Mail, color: "var(--c-about)" },
     ],
   },
@@ -95,7 +100,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const [newWorkspace, setNewWorkspace] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
 
-  useEffect(() => setMobileOpen(false), [pathname]);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   // Show the tutorial the first time someone uses the app.
   useEffect(() => {
@@ -203,6 +210,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
             </ul>
           </div>
         ))}
+        <a
+          href={SITE.instagram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-white"
+          style={{ background: INSTAGRAM_GRADIENT }}
+        >
+          <InstagramIcon className="size-5" /> Follow @{SITE.instagram.handle}
+        </a>
       </div>
 
       <div className="border-t border-line p-3">
@@ -299,6 +315,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} onCreateTask={() => setQuickCreate(true)} />
       <QuickCreateTask open={quickCreate} onClose={() => setQuickCreate(false)} defaultProjectId={project && !project.archived ? project.id : undefined} />
       <NewWorkspaceDialog open={newWorkspace} onClose={() => setNewWorkspace(false)} />
+      <NeroxAI />
       <Tour open={tourOpen} onClose={() => setTourOpen(false)} />
     </div>
   );

@@ -1,14 +1,17 @@
 import Link from "next/link";
-import { Activity, ArrowRight, CheckSquare, FolderKanban, GitBranch, GraduationCap, Rocket, Users } from "lucide-react";
+import { Activity, ArrowRight, BookOpen, CheckSquare, FolderKanban, GraduationCap, Rocket, Sparkles, Split, Users } from "lucide-react";
 import { SITE } from "@/config/site";
+import { FollowInstagram } from "@/components/projects/follow-instagram";
 import { Avatar, ButtonLink, IconBadge } from "@/components/ui/primitives";
 import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 
 const FEATURES = [
+  { icon: <Activity className="size-5" />, color: "var(--c-pulse)", title: "Pulse: a health check for every project", body: "A score out of 100 and a plain-English list of what's wrong, with the evidence and a fix for each." },
+  { icon: <Split className="size-5" />, color: "var(--c-whatif)", title: "What If?: test decisions safely", body: "See what a delay, a holiday or a new deadline would do to your whole plan before you commit." },
+  { icon: <BookOpen className="size-5" />, color: "var(--c-memory)", title: "Memory: learns from every project", body: "Finds patterns in your finished work, like testing always overrunning, and helps you estimate better." },
+  { icon: <Sparkles className="size-5" />, color: "var(--violet)", title: "Nerox AI: help when you're stuck", body: "Ask how anything works, or why a project is flagged, without leaving the page." },
   { icon: <FolderKanban className="size-5" />, color: "var(--c-projects)", title: "Plan in minutes", body: "Start from a template, drag tasks across a board, and see everything on a timeline." },
   { icon: <CheckSquare className="size-5" />, color: "var(--c-tasks)", title: "Know what's yours", body: "My Tasks pulls your work from every project into one list, most urgent first." },
-  { icon: <Activity className="size-5" />, color: "var(--c-pulse)", title: "A health check for every project", body: "Pulse scores each project and tells you why: what's late, what's stuck, who's overloaded." },
-  { icon: <GitBranch className="size-5" />, color: "var(--c-whatif)", title: "See the knock-on effects", body: "Link tasks that depend on each other, so one delay never surprises you." },
 ];
 
 const AUDIENCES = [
@@ -68,10 +71,11 @@ export default function HomePage() {
       {/* Features */}
       <section className="bg-sidebar py-16">
         <div className="mx-auto max-w-[1180px] px-5">
-          <h2 className="text-[30px] font-bold tracking-tight">Everything you need, nothing you don&apos;t</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <h2 className="text-[30px] font-bold tracking-tight">Features you won&apos;t find anywhere else</h2>
+          <p className="mt-2 max-w-2xl text-[17px] text-muted">Most tools store your tasks. Nerox understands them.</p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
-              <div key={f.title} className="flex gap-4 rounded-2xl border border-line bg-panel p-6 shadow-card">
+              <div key={f.title} className="flex flex-col gap-4 rounded-2xl border border-line bg-panel p-6 shadow-card">
                 <IconBadge color={f.color} size={44}>
                   {f.icon}
                 </IconBadge>
@@ -125,17 +129,39 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Why different */}
+      <section className="mx-auto max-w-[1180px] px-5 pb-16">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h2 className="text-[30px] font-bold tracking-tight">Why teams choose Nerox</h2>
+          <Link href="/about" className="text-[15px] font-semibold text-violet hover:underline">
+            Read our story
+          </Link>
+        </div>
+        <ul className="mt-6 grid gap-3 md:grid-cols-2">
+          {SITE.differentiators.slice(0, 4).map((d) => (
+            <li key={d.title} className="rounded-2xl border border-line bg-panel p-5 shadow-card">
+              <p className="text-[17px] font-semibold">{d.title}</p>
+              <p className="mt-1 text-[15px] text-muted">{d.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto max-w-[1180px] px-5 pb-16">
+        <FollowInstagram />
+      </section>
+
       {/* CTA */}
       <section className="mx-auto max-w-[1180px] px-5 pb-20">
         <div className="rounded-3xl bg-violet px-8 py-12 text-white md:px-14">
           <h2 className="max-w-xl text-[32px] font-bold leading-tight tracking-tight">Start your first project in under five minutes.</h2>
-          <p className="mt-3 max-w-xl text-[17px] text-white/80">No credit card. A short tour shows you around the first time you sign in.</p>
+          <p className="mt-3 max-w-xl text-[17px] text-white/80">Sign up free, no card needed. A short tour shows you around the first time you sign in.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup" className="inline-flex h-13 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-semibold text-[#3b1fd1] hover:bg-white/90">
               Create my account <ArrowRight className="size-5" />
             </Link>
-            <Link href="/contact" className="inline-flex h-13 items-center rounded-xl border border-white/40 px-7 text-[16px] font-semibold text-white hover:bg-white/10">
-              Talk to us
+            <Link href="/pricing" className="inline-flex h-13 items-center rounded-xl border border-white/40 px-7 text-[16px] font-semibold text-white hover:bg-white/10">
+              See plans and pricing
             </Link>
           </div>
         </div>
