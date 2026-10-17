@@ -17,7 +17,7 @@ export function ProjectTabs({ projectId, riskCount }: { projectId: string; riskC
   const pathname = usePathname();
   const base = `/projects/${projectId}`;
   return (
-    <nav aria-label="Project views" className="mt-6 flex gap-1 overflow-x-auto border-b border-line">
+    <nav aria-label="Project views" className="mt-6 flex gap-2 overflow-x-auto pb-1">
       {TABS.map((t) => {
         const href = t.slug ? `${base}/${t.slug}` : base;
         const active = pathname === href;
@@ -26,10 +26,13 @@ export function ProjectTabs({ projectId, riskCount }: { projectId: string; riskC
             key={t.slug}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={cn("-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-[13px]", active ? "border-violet text-fg" : "border-transparent text-muted hover:text-fg")}
+            className={cn(
+              "inline-flex h-10 items-center whitespace-nowrap rounded-xl px-4 text-[14px] font-semibold",
+              active ? "bg-violet text-white" : "border border-line bg-panel text-muted hover:text-fg",
+            )}
           >
             {t.label}
-            {t.slug === "pulse" && riskCount > 0 && <span className="num ml-1.5 text-[11px] text-warning">{riskCount}</span>}
+            {t.slug === "pulse" && riskCount > 0 && <span className="num ml-2 rounded-full bg-warning px-1.5 text-[11px] text-white">{riskCount}</span>}
           </Link>
         );
       })}

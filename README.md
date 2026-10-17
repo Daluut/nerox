@@ -12,7 +12,18 @@ This repository contains **Phase 1 (functional foundation)** and **Phase 2 (Nero
 - **Zod** for server-side validation, **dnd-kit** for the board
 - **Vitest** + **PGlite** for unit and database tests, **Playwright** for the end-to-end workflow
 
+## Your brand details
+
+Everything shown on the public **home**, **About us** and **Contact** pages comes from one file: `src/config/site.ts`. Fill in your name, role, short bio, LinkedIn URL and contact email there. Until you do, those pages show a clear "coming soon" notice instead of broken links.
+
 ## What's implemented
+
+**Look and feel**
+- Three colour themes chosen by each person: **Light** (default), **Dark** and **Nerox** (deep blue-purple). Pick one from the sidebar or Settings; it's remembered on that device and applied without a flash.
+- Each part of the app has its own colour (Home, My Tasks, Projects, Pulse, Team…), large buttons and roomy layouts.
+- Navigation grouped into short sections: Home / My Tasks / Projects, Insights, People, and Nerox (About, Contact).
+- A guided **tutorial** on first sign-in that highlights each area in turn. It's saved per user and can be replayed from the ? button.
+- Public site: a home page, **About us** (story, mission, values, founder with LinkedIn button) and **Contact** (email, LinkedIn, and a form that opens the visitor's email app).
 
 **Accounts and workspaces**
 - Sign up, sign in, sign out, password reset, session refresh in middleware, protected routes.
@@ -28,7 +39,7 @@ This repository contains **Phase 1 (functional foundation)** and **Phase 2 (Nero
 - Dependencies as a directed graph. Cycles are rejected in the UI (impossible options aren't offered), in the server action, and by a database trigger (which also covers concurrent edits). Cross-project dependencies are rejected.
 - Completion timestamps, status-change times and the activity log are written by database triggers, so they can't be forged by a client.
 - My Tasks across projects: Needs attention, Today, Upcoming, Overdue, Completed, All; filters; "created by me for others".
-- Overview: portfolio metrics (all clickable), project health list, my priorities, Pulse highlights, next two weeks, recent activity, and a proper empty state for new users.
+- Home: three clickable summary cards, your next tasks, your projects, and the single most important Pulse finding. Upcoming dates and recent activity live on the separate **Updates** page so Home stays simple.
 - In-app notifications for assignment, reassignment, comments on your tasks and completed milestones.
 - Global search (Ctrl/⌘+K; it never captures keys while you're typing in a field) across projects, tasks, milestones and people.
 - Live updates via Supabase Realtime: when a collaborator changes tasks, comments, dependencies or milestones, open pages refresh.
@@ -131,5 +142,6 @@ tests/unit, tests/db, tests/e2e
 - Pulse history is recorded when a project is viewed (one snapshot per day); days nobody opens the project have no snapshot. A scheduled job would fill those in.
 - Board columns are the five fixed statuses; within a column, cards sort by priority then due date (no manual ordering).
 - Attachments, @mentions, notification preferences and email notifications aren't implemented.
+- The contact form doesn't send email itself; it opens the visitor's email app with the message filled in, so no email service is needed.
 - Realtime refreshes the page's server data when something changes; there's no per-field merge, so two people editing the same text field at once means the last save wins.
 - The end-to-end suite was run against a local stack built from Supabase's own Auth (GoTrue) and PostgREST services on Postgres 16, without Realtime. Live updates haven't been exercised in an automated test.

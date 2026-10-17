@@ -8,9 +8,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getAppContext();
-  const [{ data: projects }, { count }] = await Promise.all([
+  const [{ data: projects }, { count }, { data: profile }] = await Promise.all([
     ctx.supabase.from("projects").select("id, name, archived_at").eq("workspace_id", ctx.workspace.id).order("name"),
     ctx.supabase.from("notifications").select("id", { count: "exact", head: true }).eq("workspace_id", ctx.workspace.id).is("read_at", null),
+    ctx.supabase.from("profiles").select("preferences").eq("id", ctx.userId).single(),
   ]);
   const data: ClientAppData = {
     userId: ctx.userId,
@@ -25,6 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     projects: (projects ?? []).map((p) => ({ id: p.id, name: p.name, archived: !!p.archived_at })),
     unreadCount: count ?? 0,
     realtime: process.env.NEXT_PUBLIC_REALTIME !== "off",
+    tourDone: !!(profile?.preferences as { tour_done?: boolean } | null)?.tour_done,
   };
   return (
     <AppDataProvider value={data}>

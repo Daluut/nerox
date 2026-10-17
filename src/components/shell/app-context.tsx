@@ -16,6 +16,7 @@ export interface ClientAppData {
   projects: { id: string; name: string; archived: boolean }[];
   unreadCount: number;
   realtime: boolean;
+  tourDone: boolean;
 }
 
 const Ctx = createContext<ClientAppData | null>(null);

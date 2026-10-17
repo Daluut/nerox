@@ -25,6 +25,21 @@ async function page({ mobile = false } = {}) {
   return p;
 }
 
+/** New users see the tutorial on their first app page; step through it or skip it. */
+async function handleTour(p, { walk = false } = {}) {
+  const start = p.locator("text=Show me around");
+  await start.waitFor({ timeout: 5000 }).catch(() => {});
+  if (!(await start.isVisible())) return false;
+  if (!walk) {
+    await p.click("text=Skip tour");
+    return true;
+  }
+  await start.click();
+  for (let i = 0; i < 12 && !(await p.locator("text=You're all set").isVisible()); i++) await p.getByRole("button", { name: /^Next/ }).click();
+  await p.click("text=Start using Nerox");
+  return true;
+}
+
 async function signUp(p, name, email, url = `${BASE}/signup`) {
   await p.goto(url);
   await p.fill("#name", name);
@@ -54,6 +69,10 @@ async function main() {
   await ana.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
   const project = ana.url();
   ok("created a project with template tasks, milestones and dependencies");
+  if (!(await handleTour(ana, { walk: true }))) throw new Error("first-time tutorial did not appear");
+  await ana.reload();
+  if (await ana.locator("text=Show me around").isVisible({ timeout: 2000 }).catch(() => false)) throw new Error("tutorial reappeared after finishing");
+  ok("first-time tutorial shown once and completed");
 
   // 4. Invite a team member, who signs up through the link and joins.
   await ana.goto(`${BASE}/team`);
@@ -72,6 +91,7 @@ async function main() {
   await ben.waitForURL("**/invite/**");
   await ben.click("text=Accept and join");
   await ben.waitForURL("**/overview");
+  await handleTour(ben);
   await ben.waitForSelector("main >> text=Coursework app", { timeout: 15000 }).catch(() => {
     throw new Error("new member can't see the project");
   });
@@ -138,6 +158,7 @@ async function main() {
   await eve.click("text=Create workspace");
   await eve.waitForSelector("text=Start your first project");
   await eve.goto(project);
+  await handleTour(eve);
   await eve.waitForLoadState("networkidle");
   if ((await eve.textContent("body")).includes("Prepare demo video")) throw new Error("cross-workspace access");
   ok("data persists; another workspace's user can't open the project by URL");

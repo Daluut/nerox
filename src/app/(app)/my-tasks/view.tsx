@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { CheckSquare, Plus } from "lucide-react";
 import { addDays } from "@/lib/domain/dates";
 import { PRIORITIES, PRIORITY_LABEL, STATUS_LABEL, TASK_STATUSES, PRIORITY_RANK } from "@/lib/domain/types";
 import { canWrite, useAppData } from "@/components/shell/app-context";
 import { TaskRow, type TaskRowData } from "@/components/tasks/task-row";
 import { QuickCreateTask } from "@/components/tasks/quick-create";
-import { Button, EmptyState } from "@/components/ui/primitives";
+import { Button, EmptyState, PageHeader } from "@/components/ui/primitives";
 import { cn } from "@/components/ui/cn";
 
 export interface MyTaskItem extends TaskRowData {
@@ -112,44 +112,44 @@ export function MyTasksView({ items, projects, initialView, initialScope }: { it
   }, [scoped, today]);
 
   return (
-    <div className="mx-auto max-w-[1000px] px-4 py-6 md:px-8 md:py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-[22px] font-semibold">My Tasks</h1>
-          <p className="mt-1 text-muted">
-            {scope === "assigned" ? "Everything assigned to you, across projects." : scope === "created" ? "Tasks you created for other people." : "Every task in the workspace."}
-          </p>
-        </div>
-        {canWrite(data.role) && (
-          <Button size="sm" onClick={() => setCreating(true)} disabled={!projects.length}>
-            <Plus className="size-3.5" /> Add task
-          </Button>
-        )}
-      </div>
+    <div className="mx-auto max-w-[1000px] px-4 py-8 md:px-10">
+      <PageHeader
+        title="My Tasks"
+        description={scope === "assigned" ? "Everything assigned to you, across projects." : scope === "created" ? "Tasks you created for other people." : "Every task in the workspace."}
+        icon={<CheckSquare className="size-6" />}
+        color="var(--c-tasks)"
+        action={
+          canWrite(data.role) && (
+            <Button variant="primary" onClick={() => setCreating(true)} disabled={!projects.length}>
+              <Plus className="size-4" /> Add task
+            </Button>
+          )
+        }
+      />
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-1 gap-y-2 border-b border-line" role="tablist" aria-label="Task views">
+      <div className="mt-8 flex flex-wrap items-center gap-2" role="tablist" aria-label="Task views">
         {VIEWS.map((v) => (
           <button
             key={v.id}
             role="tab"
             aria-selected={view === v.id}
             onClick={() => setView(v.id)}
-            className={cn("-mb-px border-b-2 px-3 py-2 text-[13px]", view === v.id ? "border-violet text-fg" : "border-transparent text-muted hover:text-fg")}
+            className={cn("inline-flex h-10 items-center rounded-xl px-4 text-[14px] font-semibold", view === v.id ? "bg-violet text-white" : "border border-line bg-panel text-muted hover:text-fg")}
           >
             {v.label}
-            {v.id === "attention" && counts.attention > 0 && <span className="num ml-1.5 text-[11px] text-warning">{counts.attention}</span>}
-            {v.id === "overdue" && counts.overdue > 0 && <span className="num ml-1.5 text-[11px] text-danger">{counts.overdue}</span>}
+            {v.id === "attention" && counts.attention > 0 && <span className="num ml-2 rounded-full bg-warning px-1.5 text-[11px] text-white">{counts.attention}</span>}
+            {v.id === "overdue" && counts.overdue > 0 && <span className="num ml-2 rounded-full bg-danger px-1.5 text-[11px] text-white">{counts.overdue}</span>}
           </button>
         ))}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
-        <select aria-label="Whose tasks" className="field w-auto py-1 text-[12px]" value={scope} onChange={(e) => setScope(e.target.value as Scope)}>
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-[13px]">
+        <select aria-label="Whose tasks" className="field w-auto py-1.5 text-[14px]" value={scope} onChange={(e) => setScope(e.target.value as Scope)}>
           <option value="assigned">Assigned to me</option>
           <option value="created">Created by me for others</option>
           <option value="all">Everyone&apos;s tasks</option>
         </select>
-        <select aria-label="Project" className="field w-auto py-1 text-[12px]" value={project} onChange={(e) => setProject(e.target.value)}>
+        <select aria-label="Project" className="field w-auto py-1.5 text-[14px]" value={project} onChange={(e) => setProject(e.target.value)}>
           <option value="">All projects</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
@@ -157,7 +157,7 @@ export function MyTasksView({ items, projects, initialView, initialScope }: { it
             </option>
           ))}
         </select>
-        <select aria-label="Priority" className="field w-auto py-1 text-[12px]" value={priority} onChange={(e) => setPriority(e.target.value)}>
+        <select aria-label="Priority" className="field w-auto py-1.5 text-[14px]" value={priority} onChange={(e) => setPriority(e.target.value)}>
           <option value="">Any priority</option>
           {PRIORITIES.map((p) => (
             <option key={p} value={p}>
@@ -165,7 +165,7 @@ export function MyTasksView({ items, projects, initialView, initialScope }: { it
             </option>
           ))}
         </select>
-        <select aria-label="Status" className="field w-auto py-1 text-[12px]" value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select aria-label="Status" className="field w-auto py-1.5 text-[14px]" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">Any status</option>
           {TASK_STATUSES.map((s) => (
             <option key={s} value={s}>
@@ -187,7 +187,7 @@ export function MyTasksView({ items, projects, initialView, initialScope }: { it
         )}
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-line bg-panel">
+      <div className="mt-5 overflow-hidden rounded-2xl border border-line bg-panel shadow-card">
         {groups.length === 0 ? (
           <EmptyState className="px-5" title={view === "attention" ? "Nothing needs your attention" : view === "overdue" ? "Nothing overdue" : "No tasks here"}>
             {view === "attention"
@@ -200,7 +200,7 @@ export function MyTasksView({ items, projects, initialView, initialScope }: { it
           groups.map((g) => (
             <section key={g.label || "list"}>
               {g.label && (
-                <h2 className={cn("border-b border-line bg-raised/50 px-4 py-1.5 text-[12px] font-medium", g.label === "Overdue" ? "text-danger" : "text-muted")}>
+                <h2 className={cn("border-b border-line bg-raised px-5 py-2.5 text-[14px] font-semibold", g.label === "Overdue" ? "text-danger" : "text-fg")}>
                   {g.label} <span className="num font-normal text-faint">{g.items.length}</span>
                 </h2>
               )}

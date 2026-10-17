@@ -38,7 +38,11 @@ export function assess(
     tasks,
     dependencies,
     milestones,
-    members: memberIds.map((id) => ({ userId: id, name: ctx.members.find((m) => m.userId === id)?.name ?? "Former member" })),
+    // Project members plus anyone assigned work, named from the whole workspace.
+    members: [...new Set([...memberIds, ...tasks.filter((t) => t.assigneeId && t.status !== "done").map((t) => t.assigneeId!)])].map((id) => ({
+      userId: id,
+      name: ctx.members.find((m) => m.userId === id)?.name ?? "Former member",
+    })),
     today: ctx.today,
     timeZone: ctx.timezone,
     now: new Date(),

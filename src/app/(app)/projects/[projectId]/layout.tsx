@@ -2,9 +2,10 @@ import { getAppContext } from "@/lib/data/context";
 import { loadProjectBundle, recordSnapshots } from "@/lib/data/queries";
 import { formatDate, daysBetween } from "@/lib/domain/dates";
 import { can, canDeleteProject } from "@/lib/domain/permissions";
-import { HealthBadge } from "@/components/ui/badges";
-import { Avatar } from "@/components/ui/primitives";
-import { HealthStrip } from "@/components/pulse/health";
+import { FolderKanban } from "lucide-react";
+import { HEALTH_COLOR } from "@/components/ui/badges";
+import { HEALTH_LABEL } from "@/lib/pulse/types";
+import { Avatar, IconBadge } from "@/components/ui/primitives";
 import { ProjectActions } from "@/components/projects/project-actions";
 import { ProjectTabs } from "@/components/projects/project-tabs";
 import { cn } from "@/components/ui/cn";
@@ -20,17 +21,22 @@ export default async function ProjectLayout({ children, params }: { children: Re
   const members = b.memberIds.map((id) => ctx.members.find((m) => m.userId === id)).filter((m): m is NonNullable<typeof m> => !!m);
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 pt-6 md:px-8">
+    <div className="mx-auto max-w-[1280px] px-4 pt-8 md:px-10">
       {p.archivedAt && (
-        <p className="mb-4 rounded-md border border-line-strong bg-raised px-3 py-2 text-[13px] text-muted">
+        <p className="mb-4 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 text-[14px]">
           This project is archived, so it&apos;s hidden from Overview and Pulse. Restore it from the project menu to resume work.
         </p>
       )}
-      <header className="flex flex-col gap-4">
+      <header className="rounded-2xl border border-line bg-panel p-6 shadow-card">
         <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="truncate text-[22px] font-semibold">{p.name}</h1>
-            {p.description && <p className="mt-1 line-clamp-2 max-w-2xl text-muted">{p.description}</p>}
+          <div className="flex min-w-0 items-center gap-4">
+            <IconBadge color="var(--c-projects)" size={48}>
+              <FolderKanban className="size-6" />
+            </IconBadge>
+            <div className="min-w-0">
+              <h1 className="truncate text-[26px] font-bold tracking-tight">{p.name}</h1>
+              {p.description && <p className="mt-0.5 line-clamp-1 max-w-2xl text-[15px] text-muted">{p.description}</p>}
+            </div>
           </div>
           <ProjectActions
             project={{ id: p.id, name: p.name, description: p.description, startDate: p.startDate, deadline: p.deadline, ownerId: p.ownerId, status: p.status, archived: !!p.archivedAt }}
@@ -39,43 +45,48 @@ export default async function ProjectLayout({ children, params }: { children: Re
             canDelete={canDeleteProject(ctx.role, ctx.userId, p.ownerId)}
           />
         </div>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-[13px] sm:flex sm:flex-wrap sm:items-center">
-          <div className="min-w-[180px]">
-            <div className="mb-1.5 flex items-center justify-between gap-3">
-              <HealthBadge status={a.status} score={a.score} />
-            </div>
-            <HealthStrip assessment={a} height={5} className="max-w-[200px]" />
+        <dl className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="rounded-xl p-4" style={{ background: `color-mix(in srgb, ${HEALTH_COLOR[a.status]} 12%, transparent)` }}>
+            <dt className="text-[13px] font-medium text-muted">Health</dt>
+            <dd className="mt-1 flex items-baseline gap-2" style={{ color: HEALTH_COLOR[a.status] }}>
+              <span className="num text-[26px] font-bold leading-none">{a.score ?? "–"}</span>
+              <span className="text-[14px] font-semibold">{HEALTH_LABEL[a.status]}</span>
+            </dd>
           </div>
-          <div>
-            <p className="text-[12px] text-faint">Progress</p>
-            <p className="num">
-              {a.progress.percent}%<span className="ml-1.5 font-sans text-[12px] text-faint">{a.progress.method === "effort" ? "of estimated effort" : `${a.counts.done} of ${a.counts.total} tasks`}</span>
-            </p>
+          <div className="rounded-xl bg-raised p-4">
+            <dt className="text-[13px] font-medium text-muted">Progress</dt>
+            <dd className="mt-1">
+              <span className="num text-[26px] font-bold leading-none">{a.progress.percent}%</span>
+              <span className="mt-2 block h-2 overflow-hidden rounded-full bg-hover">
+                <span className="block h-full rounded-full bg-c-projects" style={{ width: `${a.progress.percent}%` }} />
+              </span>
+            </dd>
           </div>
-          <div>
-            <p className="text-[12px] text-faint">Deadline</p>
-            <p className={cn(daysLeft !== null && daysLeft < 0 && p.status !== "completed" && "text-danger")}>
+          <div className="rounded-xl bg-raised p-4">
+            <dt className="text-[13px] font-medium text-muted">Deadline</dt>
+            <dd className={cn("mt-1 text-[18px] font-bold", daysLeft !== null && daysLeft < 0 && p.status !== "completed" && "text-danger")}>
               {p.deadline ? formatDate(p.deadline, ctx.today) : "Not set"}
-              {daysLeft !== null && p.status !== "completed" && <span className="ml-1.5 text-[12px] text-faint">{daysLeft < 0 ? `${-daysLeft} days ago` : daysLeft === 0 ? "today" : `${daysLeft} days left`}</span>}
-            </p>
+              {daysLeft !== null && p.status !== "completed" && (
+                <span className="block text-[13px] font-medium text-muted">{daysLeft < 0 ? `${-daysLeft} days ago` : daysLeft === 0 ? "Today" : `${daysLeft} days left`}</span>
+              )}
+            </dd>
           </div>
-          <div>
-            <p className="text-[12px] text-faint">Team</p>
-            <div className="mt-0.5 flex -space-x-1.5">
+          <div className="rounded-xl bg-raised p-4">
+            <dt className="text-[13px] font-medium text-muted">Team</dt>
+            <dd className="mt-2 flex -space-x-2">
               {members.slice(0, 6).map((m) => (
-                <Avatar key={m.userId} name={m.name} size={22} className="ring-2 ring-bg" />
+                <Avatar key={m.userId} name={m.name} size={30} className="ring-2 ring-panel" />
               ))}
-              {members.length > 6 && <span className="ml-3 text-[12px] text-faint">+{members.length - 6}</span>}
-              {!members.length && <span className="text-muted">No members</span>}
-            </div>
+              {members.length > 6 && <span className="ml-4 text-[13px] text-muted">+{members.length - 6}</span>}
+              {!members.length && <span className="text-[14px] text-muted">No members yet</span>}
+            </dd>
           </div>
-          {p.status !== "active" && (
-            <div>
-              <p className="text-[12px] text-faint">Status</p>
-              <p className={p.status === "completed" ? "text-success" : "text-warning"}>{p.status === "completed" ? "Completed" : "On hold"}</p>
-            </div>
-          )}
-        </div>
+        </dl>
+        {p.status !== "active" && (
+          <p className={cn("mt-4 text-[14px] font-medium", p.status === "completed" ? "text-success" : "text-warning")}>
+            {p.status === "completed" ? "This project is marked as completed." : "This project is on hold."}
+          </p>
+        )}
       </header>
       <ProjectTabs projectId={p.id} riskCount={a.risks.length} />
       <div className="py-6">{children}</div>

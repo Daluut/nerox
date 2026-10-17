@@ -77,6 +77,16 @@ export async function updateProfile(input: { name: string }): Promise<ActionResu
   return okVoid();
 }
 
+/** Records that the person has finished (or skipped) the tutorial, on every device. */
+export async function completeTour(): Promise<ActionResult> {
+  const { supabase, user } = await requireUser();
+  const { data } = await supabase.from("profiles").select("preferences").eq("id", user.id).single();
+  const preferences = { ...((data?.preferences as Record<string, unknown>) ?? {}), tour_done: true };
+  const { error } = await supabase.from("profiles").update({ preferences }).eq("id", user.id);
+  if (error) return err(friendlyError(error));
+  return okVoid();
+}
+
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 
 /** Creates a single-use invitation link. Only a hash of the token is stored. */

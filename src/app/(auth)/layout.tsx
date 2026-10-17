@@ -1,10 +1,13 @@
+import Link from "next/link";
 import { Logo } from "@/components/shell/logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(440px,560px)]">
       <aside className="relative hidden overflow-hidden border-r border-line bg-sidebar lg:flex lg:flex-col lg:justify-between lg:p-12">
-        <Logo />
+        <Link href="/" aria-label="Nerox home">
+          <Logo />
+        </Link>
         <div className="max-w-md">
           <h1 className="text-[34px] font-semibold leading-[1.15]">Your projects, understood.</h1>
           <p className="mt-4 text-[15px] text-muted">
@@ -18,9 +21,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </aside>
       <main className="flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-[380px]">
-          <div className="mb-10 lg:hidden">
+          <Link href="/" aria-label="Nerox home" className="mb-10 block lg:hidden">
             <Logo />
-          </div>
+          </Link>
           {children}
         </div>
       </main>

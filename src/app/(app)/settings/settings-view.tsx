@@ -4,7 +4,9 @@ import { useState } from "react";
 import { deleteWorkspace, updateProfile, updatePulseWeights, updateWorkspace } from "@/lib/actions/workspace";
 import { DEFAULT_CONFIG, FACTOR_KEYS, FACTOR_LABEL, type FactorKey } from "@/lib/pulse/config";
 import { ConfirmDialog } from "@/components/ui/dialog";
-import { Button, ErrorNote, Field, Panel } from "@/components/ui/primitives";
+import { Button, ErrorNote, Field, PageHeader, Panel } from "@/components/ui/primitives";
+import { ThemePicker } from "@/components/ui/theme-picker";
+import { Settings as SettingsIcon } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
 const ZONES = ["Europe/London", "Europe/Dublin", "Europe/Paris", "Europe/Berlin", "America/New_York", "America/Chicago", "America/Los_Angeles", "Asia/Dubai", "Asia/Kolkata", "Asia/Singapore", "Australia/Sydney", "UTC"];
@@ -39,8 +41,13 @@ export function SettingsView(props: {
   }
 
   return (
-    <div className="mx-auto flex max-w-[720px] flex-col gap-6 px-4 py-6 md:px-8 md:py-8">
-      <h1 className="text-[22px] font-semibold">Settings</h1>
+    <div className="mx-auto flex max-w-[760px] flex-col gap-6 px-4 py-8 md:px-10">
+      <PageHeader title="Settings" description="Your profile, colours and workspace." icon={<SettingsIcon className="size-6" />} color="var(--c-about)" />
+
+      <Panel title="Colours">
+        <p className="mb-4 text-[14px] text-muted">Pick how Nerox looks on this device.</p>
+        <ThemePicker />
+      </Panel>
 
       <Panel title="Your profile">
         <form

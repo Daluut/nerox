@@ -4,19 +4,23 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "./cn";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
-type Size = "sm" | "md";
+type Size = "sm" | "md" | "lg";
 
 const VARIANT: Record<Variant, string> = {
-  primary: "bg-violet text-white hover:bg-violet-strong border border-transparent",
-  secondary: "bg-raised text-fg border border-line-strong hover:bg-hover",
+  primary: "bg-violet text-white hover:bg-violet-strong border border-transparent shadow-[0_2px_10px_var(--violet-soft)]",
+  secondary: "bg-panel text-fg border border-line-strong hover:bg-hover",
   ghost: "text-muted hover:text-fg hover:bg-hover border border-transparent",
   danger: "bg-danger/90 text-white hover:bg-danger border border-transparent",
 };
-const SIZE: Record<Size, string> = { sm: "h-7 px-2.5 text-[13px] gap-1.5", md: "h-9 px-3.5 text-sm gap-2" };
+const SIZE: Record<Size, string> = {
+  sm: "h-9 px-3.5 text-[14px] gap-1.5 rounded-lg",
+  md: "h-11 px-5 text-[15px] gap-2 rounded-xl",
+  lg: "h-13 px-7 text-[16px] gap-2.5 rounded-xl",
+};
 
 export function buttonClass(variant: Variant = "secondary", size: Size = "md", extra?: string) {
   return cn(
-    "inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors disabled:opacity-50 disabled:pointer-events-none select-none",
+    "inline-flex items-center justify-center font-semibold whitespace-nowrap transition-colors disabled:opacity-50 disabled:pointer-events-none select-none",
     VARIANT[variant],
     SIZE[size],
     extra,
@@ -47,35 +51,92 @@ export function ButtonLink({ variant = "secondary", size = "md", className, ...r
 export function Field({ label, error, hint, children, htmlFor, className }: { label: string; error?: string; hint?: string; children: ReactNode; htmlFor?: string; className?: string }) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={htmlFor} className="text-[13px] font-medium text-muted">
+      <label htmlFor={htmlFor} className="text-[14px] font-medium text-fg">
         {label}
       </label>
       {children}
-      {error ? <p className="text-[12px] text-danger">{error}</p> : hint ? <p className="text-[12px] text-faint">{hint}</p> : null}
+      {error ? <p className="text-[13px] text-danger">{error}</p> : hint ? <p className="text-[13px] text-muted">{hint}</p> : null}
     </div>
   );
 }
 
-export function Panel({ title, action, children, className, bodyClassName }: { title?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; bodyClassName?: string }) {
+export function Panel({
+  title,
+  action,
+  children,
+  className,
+  bodyClassName,
+  accent,
+  icon,
+}: {
+  title?: ReactNode;
+  action?: ReactNode;
+  children: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  accent?: string; // a CSS colour, e.g. "var(--c-tasks)"
+  icon?: ReactNode;
+}) {
   return (
-    <section className={cn("rounded-lg border border-line bg-panel", className)}>
+    <section className={cn("rounded-2xl border border-line bg-panel shadow-card", className)}>
       {(title || action) && (
-        <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-2.5">
-          {title && <h2 className="text-[13px] font-semibold text-fg">{title}</h2>}
+        <header className="flex items-center justify-between gap-3 px-5 pb-1 pt-4">
+          {title && (
+            <h2 className="flex items-center gap-2.5 text-[16px] font-semibold text-fg">
+              {icon && (
+                <span className="flex size-7 items-center justify-center rounded-lg" style={{ background: `color-mix(in srgb, ${accent ?? "var(--violet)"} 15%, transparent)`, color: accent ?? "var(--violet)" }}>
+                  {icon}
+                </span>
+              )}
+              {title}
+            </h2>
+          )}
           {action}
         </header>
       )}
-      <div className={cn("p-4", bodyClassName)}>{children}</div>
+      <div className={cn("p-5", bodyClassName)}>{children}</div>
     </section>
+  );
+}
+
+/** Coloured square icon used to give each section its own identity. */
+export function IconBadge({ color, children, size = 36 }: { color: string; children: ReactNode; size?: number }) {
+  return (
+    <span
+      className="flex shrink-0 items-center justify-center rounded-xl"
+      style={{ width: size, height: size, background: `color-mix(in srgb, ${color} 16%, transparent)`, color }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** Page heading used at the top of every screen. */
+export function PageHeader({ title, description, action, icon, color }: { title: string; description?: ReactNode; action?: ReactNode; icon?: ReactNode; color?: string }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex items-center gap-4">
+        {icon && color && (
+          <IconBadge color={color} size={48}>
+            {icon}
+          </IconBadge>
+        )}
+        <div>
+          <h1 className="text-[26px] font-bold leading-tight tracking-tight">{title}</h1>
+          {description && <p className="mt-1 text-[15px] text-muted">{description}</p>}
+        </div>
+      </div>
+      {action}
+    </div>
   );
 }
 
 export function EmptyState({ icon, title, children, action, className }: { icon?: ReactNode; title: string; children?: ReactNode; action?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex flex-col items-start gap-2 py-6", className)}>
-      {icon && <div className="mb-1 text-faint">{icon}</div>}
-      <p className="font-medium">{title}</p>
-      {children && <div className="max-w-md text-[13px] text-muted">{children}</div>}
+    <div className={cn("flex flex-col items-start gap-2 py-8", className)}>
+      {icon && <div className="mb-1 text-violet">{icon}</div>}
+      <p className="text-[16px] font-semibold">{title}</p>
+      {children && <div className="max-w-md text-[14px] text-muted">{children}</div>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   );
@@ -109,7 +170,7 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function ErrorNote({ children }: { children: ReactNode }) {
   return (
-    <p role="alert" className="rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-[13px] text-fg">
+    <p role="alert" className="rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-[14px] text-fg">
       {children}
     </p>
   );

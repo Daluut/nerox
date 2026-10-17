@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, UserPlus } from "lucide-react";
+import { Copy, UserPlus, Users } from "lucide-react";
 import { createInvitation, removeMember, revokeInvitation, setMemberRole } from "@/lib/actions/workspace";
 import { canChangeRole, canRemoveMember, ROLE_DESCRIPTION } from "@/lib/domain/permissions";
 import type { Role } from "@/lib/domain/types";
 import { useAppData } from "@/components/shell/app-context";
 import { ConfirmDialog } from "@/components/ui/dialog";
-import { Avatar, Button, ErrorNote, Field, Panel } from "@/components/ui/primitives";
+import { Avatar, Button, ErrorNote, Field, PageHeader, Panel } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
 import { timeAgo } from "@/components/ui/time";
 
@@ -36,13 +36,15 @@ export function TeamView({
   const [removing, setRemoving] = useState<MemberRow | null>(null);
 
   return (
-    <div className="mx-auto max-w-[960px] px-4 py-6 md:px-8 md:py-8">
-      <h1 className="text-[22px] font-semibold">Team</h1>
-      <p className="mt-1 text-muted">
-        {members.length} {members.length === 1 ? "member" : "members"} in {data.workspace.name}. Everyone here can see every project in the workspace.
-      </p>
+    <div className="mx-auto max-w-[1000px] px-4 py-8 md:px-10">
+      <PageHeader
+        title="Team"
+        description={`${members.length} ${members.length === 1 ? "person" : "people"} in ${data.workspace.name}. Everyone here can see every project.`}
+        icon={<Users className="size-6" />}
+        color="var(--c-team)"
+      />
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <Panel title="Members" bodyClassName="p-0">
           <ul className="divide-y divide-line">
             {members.map((m) => {

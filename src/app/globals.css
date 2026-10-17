@@ -3,41 +3,121 @@
 @import "@fontsource-variable/jetbrains-mono";
 
 /*
- * Nerox design tokens.
- * Dark-first graphite surfaces with a cool cast. Violet = brand + primary action.
- * Cyan = secondary information (links to analysis, forecasts). Amber/red are
- * reserved for real risk and never used decoratively.
+ * Nerox design tokens, in three themes chosen by the person:
+ *   light  — white surfaces, bold friendly colour (default)
+ *   dark   — neutral graphite
+ *   nerox  — the brand theme: deep blue-purple
+ * Violet is the brand and primary-action colour in every theme. Each section of
+ * the app also has its own colour (--c-*) so places are easy to tell apart.
+ * Amber and red only ever mean real risk.
  */
-:root {
-  --bg: #0d0e12;
-  --sidebar: #111217;
-  --panel: #16171d;
-  --raised: #1c1d25;
-  --hover: #22242d;
-  --border: #25272f;
-  --border-strong: #343744;
+:root,
+[data-theme="light"] {
+  --bg: #f5f6fb;
+  --sidebar: #ffffff;
+  --panel: #ffffff;
+  --raised: #f3f4fa;
+  --hover: #eceef7;
+  --border: #e4e6f0;
+  --border-strong: #cfd3e3;
+  --text: #161a33;
+  --muted: #545a78;
+  --faint: #868ca8;
+  --violet: #6b46ff;
+  --violet-strong: #5631f0;
+  --violet-soft: rgb(107 70 255 / 0.1);
+  --cyan: #0b9fc2;
+  --cyan-soft: rgb(11 159 194 / 0.1);
+  --success: #17a46b;
+  --success-soft: rgb(23 164 107 / 0.1);
+  --warning: #d98a00;
+  --warning-soft: rgb(217 138 0 / 0.12);
+  --danger: #e03e4e;
+  --danger-soft: rgb(224 62 78 / 0.1);
+  --shadow: 0 1px 2px rgb(22 26 51 / 0.05), 0 4px 16px rgb(22 26 51 / 0.05);
+  --c-home: #6b46ff;
+  --c-tasks: #2f7cf6;
+  --c-projects: #0fb39c;
+  --c-pulse: #ec4899;
+  --c-whatif: #8b5cf6;
+  --c-memory: #f59e0b;
+  --c-team: #f97316;
+  --c-about: #64748b;
+  color-scheme: light;
+}
 
-  --text: #e8e8ee;
-  --muted: #9b9eab;
-  --faint: #6c6f7d;
-
+[data-theme="dark"] {
+  --bg: #0f1014;
+  --sidebar: #131419;
+  --panel: #18191f;
+  --raised: #1f2028;
+  --hover: #262832;
+  --border: #282a33;
+  --border-strong: #383b48;
+  --text: #ececf2;
+  --muted: #a3a6b4;
+  --faint: #717482;
   --violet: #8b6cf6;
   --violet-strong: #a58ffb;
-  --violet-soft: rgb(139 108 246 / 0.14);
+  --violet-soft: rgb(139 108 246 / 0.16);
   --cyan: #52c1d6;
-  --cyan-soft: rgb(82 193 214 / 0.12);
-
+  --cyan-soft: rgb(82 193 214 / 0.14);
   --success: #4fb784;
-  --success-soft: rgb(79 183 132 / 0.13);
-  --warning: #e2a73e;
-  --warning-soft: rgb(226 167 62 / 0.13);
-  --danger: #e5564e;
-  --danger-soft: rgb(229 86 78 / 0.13);
-
-  --radius-sm: 5px;
-  --radius: 8px;
-  --radius-lg: 12px;
+  --success-soft: rgb(79 183 132 / 0.14);
+  --warning: #e8ad45;
+  --warning-soft: rgb(232 173 69 / 0.14);
+  --danger: #ef5d55;
+  --danger-soft: rgb(239 93 85 / 0.14);
+  --shadow: 0 2px 12px rgb(0 0 0 / 0.3);
+  --c-home: #9b80ff;
+  --c-tasks: #5b9bff;
+  --c-projects: #2fd0b6;
+  --c-pulse: #f472b6;
+  --c-whatif: #a78bfa;
+  --c-memory: #fbbf24;
+  --c-team: #fb923c;
+  --c-about: #94a3b8;
   color-scheme: dark;
+}
+
+[data-theme="nerox"] {
+  --bg: #0e0f2e;
+  --sidebar: #0a0b24;
+  --panel: #16174a;
+  --raised: #1d1f5c;
+  --hover: #26286e;
+  --border: #2a2c6a;
+  --border-strong: #3b3e8a;
+  --text: #f0f1ff;
+  --muted: #b2b6e6;
+  --faint: #8186c0;
+  --violet: #8f6bff;
+  --violet-strong: #b19cff;
+  --violet-soft: rgb(143 107 255 / 0.2);
+  --cyan: #4dd8ff;
+  --cyan-soft: rgb(77 216 255 / 0.14);
+  --success: #43d39e;
+  --success-soft: rgb(67 211 158 / 0.15);
+  --warning: #ffc04d;
+  --warning-soft: rgb(255 192 77 / 0.15);
+  --danger: #ff6b7a;
+  --danger-soft: rgb(255 107 122 / 0.15);
+  --shadow: 0 4px 20px rgb(5 6 30 / 0.45);
+  --c-home: #a78bff;
+  --c-tasks: #5fa8ff;
+  --c-projects: #3ee0c4;
+  --c-pulse: #ff7ac6;
+  --c-whatif: #b69bff;
+  --c-memory: #ffcf5a;
+  --c-team: #ff9f5a;
+  --c-about: #a8b0d8;
+  color-scheme: dark;
+}
+
+:root {
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
 }
 
 @theme inline {
@@ -64,6 +144,15 @@
   --color-danger-soft: var(--danger-soft);
   --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --color-c-home: var(--c-home);
+  --color-c-tasks: var(--c-tasks);
+  --color-c-projects: var(--c-projects);
+  --color-c-pulse: var(--c-pulse);
+  --color-c-whatif: var(--c-whatif);
+  --color-c-memory: var(--c-memory);
+  --color-c-team: var(--c-team);
+  --color-c-about: var(--c-about);
+  --shadow-card: var(--shadow);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
   --radius-lg: var(--radius-lg);
@@ -74,8 +163,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -97,27 +186,26 @@ h3 {
 }
 
 .num {
-  font-family: var(--font-mono);
-  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
 }
 
 /* Component classes live in a layer so Tailwind utilities (w-auto, py-1…) can override them. */
 @layer components {
 .field {
   width: 100%;
-  background: var(--bg);
+  background: var(--panel);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  padding: 7px 10px;
+  padding: 9px 12px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
   transition: border-color 120ms;
 }
 .field::placeholder {
   color: var(--faint);
 }
 .field:hover {
-  border-color: #454857;
+  border-color: var(--faint);
 }
 .field:focus {
   outline: none;
@@ -130,12 +218,13 @@ h3 {
 select.field {
   appearance: none;
   padding-right: 28px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9eab' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23868ca8' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
-input[type="date"].field::-webkit-calendar-picker-indicator {
-  filter: invert(0.7);
+[data-theme="dark"] input[type="date"].field::-webkit-calendar-picker-indicator,
+[data-theme="nerox"] input[type="date"].field::-webkit-calendar-picker-indicator {
+  filter: invert(0.75);
 }
 
 }

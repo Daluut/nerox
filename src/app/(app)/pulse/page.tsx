@@ -8,7 +8,7 @@ import { SEVERITY_RANK } from "@/lib/pulse/types";
 import { HealthStrip } from "@/components/pulse/health";
 import { RiskCard } from "@/components/pulse/risk-card";
 import { HealthBadge } from "@/components/ui/badges";
-import { ButtonLink, EmptyState } from "@/components/ui/primitives";
+import { ButtonLink, EmptyState, PageHeader } from "@/components/ui/primitives";
 
 export const metadata: Metadata = { title: "Nerox Pulse" };
 
@@ -24,11 +24,13 @@ export default async function PulsePage() {
   const sorted = [...active].sort((x, y) => (x.assessment.score ?? 101) - (y.assessment.score ?? 101));
 
   return (
-    <div className="mx-auto max-w-[1180px] px-4 py-6 md:px-8 md:py-8">
-      <h1 className="text-[22px] font-semibold">Nerox Pulse</h1>
-      <p className="mt-1 max-w-2xl text-muted">
-        Health for every active project, worked out from its tasks, dates, dependencies and assignments. Each risk shows the evidence behind it and whether it&apos;s an observed fact, a rule-based detection or a forecast.
-      </p>
+    <div className="mx-auto max-w-[1180px] px-4 py-8 md:px-10">
+      <PageHeader
+        title="Pulse"
+        description="A health check for every project, with the reasons behind each warning."
+        icon={<Activity className="size-6" />}
+        color="var(--c-pulse)"
+      />
 
       {!active.length ? (
         <EmptyState className="mt-6" icon={<Activity className="size-5" />} title="No active projects to assess" action={<ButtonLink href="/projects/new" variant="primary" size="sm">Create a project</ButtonLink>}>
@@ -38,9 +40,9 @@ export default async function PulsePage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
           <section aria-label="Projects by health" className="flex flex-col gap-2">
             {sorted.map((b) => (
-              <Link key={b.project.id} href={`/projects/${b.project.id}/pulse`} className="rounded-lg border border-line bg-panel px-4 py-3 hover:border-line-strong">
+              <Link key={b.project.id} href={`/projects/${b.project.id}/pulse`} className="rounded-2xl border border-line bg-panel p-4 shadow-card hover:border-line-strong">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="truncate text-[13px] font-medium">{b.project.name}</span>
+                  <span className="truncate text-[15px] font-semibold">{b.project.name}</span>
                   <HealthBadge status={b.assessment.status} score={b.assessment.score} />
                 </div>
                 <HealthStrip assessment={b.assessment} height={4} className="mt-2.5" />
@@ -51,7 +53,7 @@ export default async function PulsePage() {
             ))}
           </section>
           <section>
-            <h2 className="mb-3 text-[15px] font-semibold">
+            <h2 className="mb-3 text-[17px] font-semibold">
               Open risks across projects <span className="num text-[13px] font-normal text-faint">{risks.length}</span>
             </h2>
             {risks.length ? (

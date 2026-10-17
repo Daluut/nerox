@@ -9,6 +9,11 @@ import { can } from "../domain/permissions";
 import { commentSchema, createTaskSchema, updateTaskSchema, uuid } from "../validation";
 import { err, friendlyError, ok, okVoid, parse, refresh } from "./util";
 
+/** Someone given a task becomes part of that project's team. */
+async function addToProject(ctx: Awaited<ReturnType<typeof getAppContext>>, projectId: string, userId: string) {
+  await ctx.supabase.from("project_members").upsert({ project_id: projectId, user_id: userId }, { onConflict: "project_id,user_id", ignoreDuplicates: true });
+}
+
 async function writableContext() {
   const ctx = await getAppContext();
   if (!can(ctx.role, "task.write")) return { ctx, denied: err("Viewers can't make changes. Ask an admin for member access.") };
@@ -39,6 +44,7 @@ export async function createTask(input: unknown): Promise<ActionResult<{ id: str
     .select("id, project_id")
     .single();
   if (error) return err(friendlyError(error, "Couldn't create the task. Please try again."));
+  if (d.assigneeId) await addToProject(ctx, d.projectId, d.assigneeId);
   refresh();
   return ok({ id: data.id as string, projectId: data.project_id as string });
 }
@@ -77,6 +83,7 @@ export async function updateTask(taskId: string, patch: unknown): Promise<Action
   const { data, error } = await ctx.supabase.from("tasks").update(row).eq("id", id.data).select(TASK_COLUMNS).maybeSingle();
   if (error) return err(friendlyError(error, "Couldn't update the task. Please try again."));
   if (!data) return err("That task no longer exists, or you can't edit it.");
+  if (p.assigneeId) await addToProject(ctx, data.project_id as string, p.assigneeId);
   refresh();
   return ok(toTask(data));
 }
