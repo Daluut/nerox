@@ -70,51 +70,48 @@ export const SITE = {
   instagram: { handle: "neroxhq", url: "https://www.instagram.com/neroxhq/" },
 
   /**
-   * Plans. Prices are the owner's planned pricing; paid plans aren't on sale yet,
-   * so their buttons register interest by email instead of taking payment.
+   * Plans and prices. Prices are per person in the workspace.
+   * Payments only switch on once Stripe is configured (see docs/payments.md);
+   * until then the Pro button registers interest by email and nothing is limited.
    */
+  pricing: {
+    currency: "£",
+    proMonthly: 6,
+    proYearly: 60, // per person per year: two months free
+    freeMemberLimit: 5,
+  },
   plans: [
     {
       id: "free",
       name: "Free",
-      price: "£0",
-      per: "forever, during early access",
-      blurb: "Everything you need to run projects with your team.",
-      features: ["Unlimited projects and tasks", "Board, list and timeline views", "Pulse health checks", "What If? simulations", "Memory lessons and retrospectives", "Nerox AI help guide", "Invite your team"],
-      cta: "Get started free",
-      highlight: false,
+      blurb: "Everything you need to run projects with a small team.",
+      features: [
+        "Unlimited projects and tasks",
+        "Board, list and timeline views",
+        "Pulse health checks",
+        "What If? simulations",
+        "Memory lessons and retrospectives",
+        "Nerox AI help guide",
+        "Up to 5 people in a workspace",
+      ],
     },
     {
       id: "pro",
       name: "Pro",
-      price: "£6",
-      per: "per person / month",
-      blurb: "For growing teams who want Nerox AI working for them.",
-      features: ["Everything in Free", "Nerox AI answers about your own projects", "Compare saved What If? scenarios side by side", "Custom Pulse thresholds", "Export projects and reports", "Priority email support"],
-      cta: "Register interest",
-      highlight: true,
-    },
-    {
-      id: "business",
-      name: "Business",
-      price: "£12",
-      per: "per person / month",
-      blurb: "For larger companies running many teams at once.",
-      features: ["Everything in Pro", "Portfolio Pulse across every team", "Advanced roles and admin controls", "Single sign-on (SSO)", "Activity and audit log export", "Onboarding session for your team"],
-      cta: "Register interest",
-      highlight: false,
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      price: "Custom",
-      per: "tailored to you",
-      blurb: "For organisations with their own security and scale needs.",
-      features: ["Everything in Business", "Dedicated account manager", "Custom integrations", "Data residency options", "Service-level agreement"],
-      cta: "Talk to us",
-      highlight: false,
+      blurb: "For growing teams that want room for everyone and smarter help.",
+      features: [
+        "Everything in Free",
+        "Unlimited people in your workspace",
+        "Nerox AI full answers about your own projects",
+        "Export any project's tasks as a spreadsheet (CSV)",
+        "Priority email support",
+      ],
     },
   ],
+  teams: {
+    title: "Bringing Nerox to a larger organisation?",
+    body: "Need invoices, a custom agreement or help rolling Nerox out across many teams? Email us and we'll work it out with you.",
+  },
 
   contact: {
     email: "getnerox@gmail.com",

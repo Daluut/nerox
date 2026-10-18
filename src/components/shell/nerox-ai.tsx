@@ -75,7 +75,7 @@ export function NeroxAI() {
             </span>
             <div>
               <p className="text-[16px] font-bold">Nerox AI</p>
-              <p className="text-[12px] text-white/80">{data.aiEnabled ? "Ask anything about Nerox or your projects" : "Answers from the Nerox help guide"}</p>
+              <p className="text-[12px] text-white/80">{data.aiEnabled ? "Ask anything about Nerox or your projects" : data.aiOnPro ? "Help guide answers. Full AI answers come with Pro." : "Answers from the Nerox help guide"}</p>
             </div>
           </header>
 

@@ -16,6 +16,7 @@ const AUTH_STUB = `
   $$;
   create role authenticated nologin;
   create role anon nologin;
+  create role service_role nologin bypassrls;
   grant usage on schema auth to authenticated;
   grant execute on function auth.uid() to authenticated;
 `;
@@ -26,6 +27,7 @@ const GRANTS = `
   grant execute on all functions in schema public to authenticated;
   revoke execute on function public.log_activity(uuid, uuid, text, uuid, text, jsonb) from authenticated;
   revoke execute on function public.notify(uuid, uuid, uuid, text, text, text) from authenticated;
+  revoke execute on function public.billing_apply_subscription(uuid, text, text, text, text, text, integer, timestamptz, boolean, timestamptz) from authenticated;
 `;
 
 export async function createDb() {

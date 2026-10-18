@@ -275,3 +275,232 @@ select.field {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * Marketing site ("Nerox night"): the public pages and sign-in screens.
+ * Always dark, built on the Nerox theme tokens with a deeper ink background.
+ * One bold motif, the pulse line; everything else stays quiet.
+ * ════════════════════════════════════════════════════════════════════════════ */
+.mk {
+  --bg: #070820;
+  --sidebar: #0a0b26;
+  --panel: #0f1130;
+  --raised: #161942;
+  --hover: #1d2052;
+  --border: rgb(160 165 255 / 0.12);
+  --border-strong: rgb(160 165 255 / 0.22);
+  --text: #eef0ff;
+  --muted: #a9aedd;
+  --faint: #7c81b8;
+  --violet: #7c5cff;
+  --violet-strong: #a08bff;
+  --violet-soft: rgb(124 92 255 / 0.18);
+  --cyan: #4dd8ff;
+  --mk-glow: rgb(124 92 255 / 0.35);
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: dark;
+}
+
+/* Display type: large, tight and heavy. */
+.mk-display {
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+.mk-h2 {
+  font-size: clamp(30px, 4.2vw, 48px);
+  font-weight: 640;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+.mk-lede {
+  font-size: clamp(17px, 1.5vw, 19px);
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+/* Atmosphere: a faint grid that fades out, and two soft light sources. */
+.mk-grid {
+  background-image: linear-gradient(rgb(160 165 255 / 0.06) 1px, transparent 1px), linear-gradient(90deg, rgb(160 165 255 / 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
+}
+.mk-light {
+  background:
+    radial-gradient(40% 50% at 78% 18%, rgb(124 92 255 / 0.28), transparent 70%),
+    radial-gradient(30% 40% at 12% 8%, rgb(77 216 255 / 0.12), transparent 70%);
+}
+.mk-surface {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0.01));
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+
+/* Buttons */
+.mk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 26px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 160ms, background-color 160ms, border-color 160ms;
+}
+.mk-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+.mk-btn-primary {
+  color: #fff;
+  background: linear-gradient(180deg, #8b6dff, #6a48ff);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 30px -8px var(--mk-glow);
+}
+.mk-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 16px 40px -8px rgb(124 92 255 / 0.55);
+}
+.mk-btn-ghost {
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  background: rgb(255 255 255 / 0.03);
+}
+.mk-btn-ghost:hover {
+  background: rgb(255 255 255 / 0.07);
+  border-color: rgb(160 165 255 / 0.35);
+}
+.mk-btn-sm {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 11px;
+  font-size: 14px;
+}
+
+/* Browser frame around real product screenshots */
+.mk-frame {
+  border-radius: 18px;
+  border: 1px solid rgb(160 165 255 / 0.18);
+  background: #0b0c2a;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.4), 0 50px 100px -30px rgb(0 0 0 / 0.8), 0 30px 80px -40px var(--mk-glow);
+  overflow: hidden;
+}
+.mk-frame-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgb(160 165 255 / 0.1);
+  background: rgb(255 255 255 / 0.02);
+}
+.mk-frame-bar > i {
+  width: 9px;
+  height: 9px;
+  border-radius: 99px;
+  background: rgb(160 165 255 / 0.22);
+}
+
+/* The pulse line: drawn once on load */
+.mk-pulse-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mk-draw 2.2s 0.35s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes mk-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Hero entrance: one orchestrated sequence */
+.mk-enter {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: mk-enter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 90ms + 80ms);
+}
+@keyframes mk-enter {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.mk-float {
+  animation: mk-float 7s ease-in-out infinite;
+}
+@keyframes mk-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Scroll-triggered demos: hidden state until [data-shown] */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+[data-reveal][data-shown] {
+  opacity: 1;
+  transform: none;
+}
+
+/* FAQ disclosure */
+.mk-faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+.mk-faq summary::-webkit-details-marker {
+  display: none;
+}
+.mk-faq .mk-chev {
+  transition: transform 200ms;
+}
+.mk-faq[open] .mk-chev {
+  transform: rotate(45deg);
+}
+.mk-faq[open] .mk-faq-body {
+  animation: fade-in 220ms ease-out;
+}
+
+.mk-nav-link {
+  position: relative;
+  color: var(--muted);
+  transition: color 150ms;
+}
+.mk-nav-link:hover,
+.mk-nav-link[aria-current="page"] {
+  color: var(--text);
+}
+.mk-nav-link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--violet);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-enter,
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .mk-pulse-path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .mk-float {
+    animation: none;
+  }
+}

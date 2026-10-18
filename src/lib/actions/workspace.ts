@@ -1,10 +1,15 @@
 "use server";
 
+import { after } from "next/server";
+import { canInviteMore } from "../billing/plan";
+import { getEntitlements, getSubscription, syncSeats } from "../billing/server";
+import { SITE } from "@/config/site";
+
 import { createHash, randomBytes } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { WORKSPACE_COOKIE, getAppContext, requireUser } from "../data/context";
+import { WORKSPACE_COOKIE, activeMembers, getAppContext, requireUser } from "../data/context";
 import type { ActionResult } from "../data/types";
 import { can } from "../domain/permissions";
 import { FACTOR_KEYS } from "../pulse/config";
@@ -96,6 +101,13 @@ export async function createInvitation(input: { role: string; email: string; exp
   const ctx = await getAppContext();
   if (!can(ctx.role, "members.invite")) return err("Only owners and admins can invite people.");
   if (v.data.role === "admin" && ctx.role !== "owner") return err("Only the owner can invite admins.");
+  const ent = await getEntitlements(ctx);
+  if (ent.memberLimit !== null) {
+    const { data: pending } = await ctx.supabase.rpc("pending_invitation_count", { p_workspace: ctx.workspace.id });
+    if (!canInviteMore(ent, activeMembers(ctx).length, Number(pending ?? 0))) {
+      return err(`Free workspaces can have up to ${SITE.pricing.freeMemberLimit} people, including pending invitations. Upgrade to Pro on the Billing page in Settings to add more.`);
+    }
+  }
   const token = randomBytes(32).toString("base64url");
   const { error } = await ctx.supabase.from("invitations").insert({
     workspace_id: ctx.workspace.id,
@@ -130,6 +142,7 @@ export async function acceptInvitation(token: string): Promise<ActionResult> {
   const { supabase } = await requireUser();
   const { data, error } = await supabase.rpc("accept_invitation", { p_token_hash: hashToken(token) });
   if (error) return err(friendlyError(error, "This invitation link isn't valid."));
+  after(() => syncSeats(data as string));
   (await cookies()).set(WORKSPACE_COOKIE, data as string, cookieOptions);
   redirect("/overview");
 }
@@ -150,6 +163,8 @@ export async function removeMember(userId: string): Promise<ActionResult> {
   const ctx = await getAppContext();
   const { error } = await ctx.supabase.rpc("remove_member", { p_workspace: ctx.workspace.id, p_user: v.data });
   if (error) return err(friendlyError(error));
+  const workspaceId = ctx.workspace.id;
+  after(() => syncSeats(workspaceId));
   if (v.data === ctx.userId) {
     (await cookies()).delete(WORKSPACE_COOKIE);
     redirect("/overview");
@@ -162,6 +177,10 @@ export async function deleteWorkspace(confirmName: string): Promise<ActionResult
   const ctx = await getAppContext();
   if (ctx.role !== "owner") return err("Only the workspace owner can delete it.");
   if (confirmName.trim() !== ctx.workspace.name) return err("Type the workspace name exactly to confirm.");
+  const sub = await getSubscription(ctx);
+  if (sub && sub.plan === "pro" && ["active", "trialing", "past_due"].includes(sub.status) && !sub.cancel_at_period_end) {
+    return err("This workspace has an active Pro subscription. Cancel it on the Billing page in Settings first, so you aren't charged again.");
+  }
   const { error, count } = await ctx.supabase.from("workspaces").delete({ count: "exact" }).eq("id", ctx.workspace.id);
   if (error) return err(friendlyError(error));
   if (!count) return err("You don't have permission to do that.");

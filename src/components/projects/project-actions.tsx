@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Archive, CheckCircle2, MoreHorizontal, Pause, Pencil, Play, RotateCcw, Trash2 } from "lucide-react";
+import { Archive, CheckCircle2, Download, MoreHorizontal, Pause, Pencil, Play, RotateCcw, Trash2 } from "lucide-react";
 import { deleteProject, setProjectArchived, setProjectMember, setProjectStatus, updateProject } from "@/lib/actions/projects";
 import type { ProjectStatus } from "@/lib/domain/types";
 import { useAppData } from "@/components/shell/app-context";
@@ -24,9 +24,9 @@ interface P {
 
 export function ProjectActions({ project, memberIds, canEdit, canDelete }: { project: P; memberIds: string[]; canEdit: boolean; canDelete: boolean }) {
   const toast = useToast();
+  const data = useAppData();
   const [editing, setEditing] = useState(false);
   const [confirm, setConfirm] = useState<null | "delete" | "archive" | "complete">(null);
-  if (!canEdit && !canDelete) return null;
 
   const run = async (fn: () => Promise<{ ok: boolean; error?: string }>, success: string) => {
     const r = await fn();
@@ -47,6 +47,14 @@ export function ProjectActions({ project, memberIds, canEdit, canDelete }: { pro
         : { label: "Archive project", icon: <Archive className="size-3.5" />, onSelect: () => setConfirm("archive") },
     );
   }
+  items.push({
+    label: data.canExport ? "Export tasks (CSV)" : "Export tasks (CSV, Pro)",
+    icon: <Download className="size-3.5" />,
+    onSelect: () => {
+      if (data.canExport) window.location.href = `/projects/${project.id}/export`;
+      else toast.error("Spreadsheet export is part of Pro. An owner or admin can upgrade on the Billing page in Settings.");
+    },
+  });
   if (canDelete) items.push({ label: "Delete project", danger: true, icon: <Trash2 className="size-3.5" />, onSelect: () => setConfirm("delete") });
 
   return (

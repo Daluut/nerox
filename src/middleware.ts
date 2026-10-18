@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/about", "/contact", "/pricing"];
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/about", "/contact", "/pricing", "/security", "/api/stripe/webhook", "/opengraph-image"];
 
 /** Refreshes the Supabase session on every request and guards app routes. */
 export async function middleware(request: NextRequest) {
@@ -9,6 +9,21 @@ export async function middleware(request: NextRequest) {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const { pathname } = request.nextUrl;
   const isPublic = pathname === "/" || PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
+  // Once a custom domain is live, send visitors from the old *.vercel.app
+  // address to it. Preview deployments and API calls (Stripe) are left alone.
+  const canonical = process.env.NEXT_PUBLIC_SITE_URL;
+  if (canonical && process.env.VERCEL_ENV === "production" && !pathname.startsWith("/api/")) {
+    const host = request.headers.get("host") ?? "";
+    try {
+      const target = new URL(canonical);
+      if (host.endsWith(".vercel.app") && host !== target.host) {
+        return NextResponse.redirect(new URL(pathname + request.nextUrl.search, target), 308);
+      }
+    } catch {
+      // A malformed NEXT_PUBLIC_SITE_URL shouldn't take the site down.
+    }
+  }
 
   if (!url || !anonKey) {
     if (pathname === "/setup") return NextResponse.next();
@@ -43,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|icon.svg|favicon.ico|.*\\.(?:png|jpg|svg|woff2?)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|icon.svg|favicon.ico|product/|.*\\.(?:png|jpg|webp|svg|woff2?|xml|txt)$).*)"],
 };

@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { getAppContext } from "../data/context";
+import { getEntitlements } from "../billing/server";
 import { loadWorkspaceBundles } from "../data/queries";
 import { isActiveProject } from "../data/views";
 import { HEALTH_LABEL } from "../pulse/types";
@@ -66,6 +67,8 @@ export async function askNerox(messages: unknown, pathname: string): Promise<Act
 
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return ok(guideAnswer(last.content));
+  // Full AI answers are part of Pro once payments are switched on.
+  if (!(await getEntitlements(ctx)).aiAnswers) return ok(guideAnswer(last.content));
 
   // A small, non-sensitive summary of the workspace so answers can be specific.
   const active = (await loadWorkspaceBundles(ctx)).filter(isActiveProject).slice(0, 10);

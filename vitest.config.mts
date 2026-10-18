@@ -7,5 +7,6 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     environment: "node",
     testTimeout: 60_000,
+    hookTimeout: 600_000, // PGlite start-up can be slow on small machines
   },
 });

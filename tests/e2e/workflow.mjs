@@ -22,6 +22,8 @@ async function page({ mobile = false } = {}) {
   browsers.push(b);
   const c = await b.newContext(mobile ? { viewport: { width: 390, height: 844 } } : { viewport: { width: 1440, height: 900 } });
   const p = await c.newPage();
+  // Slow machines can raise this, e.g. E2E_TIMEOUT=120000.
+  p.setDefaultTimeout(Number(process.env.E2E_TIMEOUT ?? 30_000));
   p.on("pageerror", (e) => {
     console.log("  [pageerror]", e.message);
     pageErrors.push(e.message);
@@ -197,12 +199,38 @@ async function main() {
 
   // Public pages.
   const visitor = await page();
+  await visitor.goto(`${BASE}/`);
+  await visitor.waitForSelector("h1:has-text('Spot a slipping project')");
+  await visitor.locator("h2:has-text('Test a decision')").scrollIntoViewIfNeeded();
+  await visitor.waitForSelector("text=4 linked tasks move.", { timeout: 10000 });
+  await visitor.click("button:has-text('Undo the delay')");
+  await visitor.waitForSelector("text=On plan: finishes");
+  await visitor.click("summary:has-text('Who can see my projects?')");
+  await visitor.waitForSelector("text=Only people you invite");
   await visitor.goto(`${BASE}/pricing`);
-  await visitor.waitForSelector("text=Free to start. Room to grow.");
+  await visitor.waitForSelector("text=Simple pricing that grows with your team.");
+  await visitor.click("button[role=radio]:has-text('Yearly')");
+  await visitor.waitForSelector("text=per person / year");
   await visitor.goto(`${BASE}/about`);
   await visitor.waitForSelector("text=Why Nerox is different");
+  await visitor.waitForSelector("blockquote >> text=Great things are never built alone");
   await visitor.waitForSelector("a[href='https://www.instagram.com/neroxhq/']");
-  ok("public pricing and About pages load, with Instagram links");
+  await visitor.goto(`${BASE}/security`);
+  await visitor.waitForSelector("text=Each workspace is walled off");
+  for (const path of ["/sitemap.xml", "/robots.txt", "/opengraph-image"]) {
+    const r = await visitor.request.get(`${BASE}${path}`);
+    if (r.status() !== 200) throw new Error(`${path} returned ${r.status()}`);
+  }
+  ok("public home demo, FAQ, pricing switch, About quote, Security, sitemap and social image work");
+
+  const vm = await page({ mobile: true });
+  await vm.goto(`${BASE}/`);
+  await vm.click("button[aria-label='Open menu']");
+  await vm.click("#mk-mobile-nav >> text=Pricing");
+  await vm.waitForURL("**/pricing");
+  const overflow = await vm.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  if (overflow > 1) throw new Error(`public pricing page scrolls sideways on mobile by ${overflow}px`);
+  ok("public site menu works on mobile with no sideways scrolling");
 
   // Mobile smoke test.
   const m = await page({ mobile: true });

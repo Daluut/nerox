@@ -20,6 +20,7 @@ export function SettingsView(props: {
   customWeights: boolean;
   canManage: boolean;
   isOwner: boolean;
+  plan: "early_access" | "free" | "pro";
 }) {
   const toast = useToast();
   const [name, setName] = useState(props.profileName);
@@ -47,11 +48,20 @@ export function SettingsView(props: {
       <Panel title="Your plan">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-[18px] font-bold">Free <span className="ml-1 rounded-full bg-success-soft px-2 py-0.5 text-[12px] font-semibold text-success">Early access</span></p>
-            <p className="mt-1 text-[14px] text-muted">Every feature is included while Nerox is in early access. Pro, Business and Enterprise plans are coming for larger teams.</p>
+            <p className="text-[18px] font-bold">
+              {props.plan === "pro" ? "Pro" : "Free"}
+              {props.plan === "early_access" && <span className="ml-2 rounded-full bg-success-soft px-2 py-0.5 text-[12px] font-semibold text-success">Early access</span>}
+            </p>
+            <p className="mt-1 text-[14px] text-muted">
+              {props.plan === "early_access"
+                ? "Every feature is included while payments aren't switched on."
+                : props.plan === "pro"
+                  ? "Unlimited people, full Nerox AI answers and spreadsheet export."
+                  : "Upgrade to Pro for unlimited people, full Nerox AI answers and spreadsheet export."}
+            </p>
           </div>
-          <a href="/pricing" className="inline-flex h-11 items-center rounded-xl bg-violet px-5 text-[15px] font-semibold text-white hover:bg-violet-strong">
-            See plans
+          <a href="/settings/billing" className="inline-flex h-11 items-center rounded-xl bg-violet px-5 text-[15px] font-semibold text-white hover:bg-violet-strong">
+            {props.plan === "free" ? "Upgrade" : "Billing"}
           </a>
         </div>
       </Panel>

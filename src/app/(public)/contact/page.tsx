@@ -1,80 +1,61 @@
 import type { Metadata } from "next";
-import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 import { Mail } from "lucide-react";
 import { SITE } from "@/config/site";
+import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 import { INSTAGRAM_GRADIENT, InstagramIcon } from "@/components/ui/instagram-icon";
-import { IconBadge } from "@/components/ui/primitives";
 import { ContactForm } from "./contact-form";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Questions, feedback, partnership ideas or a bug to report: get in touch with the Nerox team.",
+  alternates: { canonical: "/contact" },
+};
 
 export default function ContactPage() {
   const { email, responseTime } = SITE.contact;
   const { linkedin, name } = SITE.owner;
+  const channels = [
+    { icon: <Mail className="size-5" />, bg: "rgb(77 216 255 / 0.12)", fg: "#4dd8ff", title: "Email", body: email, href: `mailto:${email}`, cta: "Write to us" },
+    { icon: <LinkedinIcon className="size-5" />, bg: "#0a66c2", fg: "#fff", title: "LinkedIn", body: `Connect with ${name}, the founder.`, href: linkedin, cta: "Connect" },
+    { icon: <InstagramIcon className="size-5" />, bg: INSTAGRAM_GRADIENT, fg: "#fff", title: "Instagram", body: `Updates and new features at @${SITE.instagram.handle}.`, href: SITE.instagram.url, cta: "Follow" },
+  ];
   return (
-    <div className="mx-auto max-w-[980px] px-5 py-16">
-      <p className="text-[15px] font-semibold text-violet">Contact</p>
-      <h1 className="mt-2 text-[42px] font-bold leading-tight tracking-tight">Get in touch</h1>
-      <p className="mt-4 max-w-2xl text-[18px] text-muted">Questions, feedback, partnership ideas or a bug to report. {responseTime}</p>
+    <div className="relative">
+      <div aria-hidden className="mk-light pointer-events-none absolute inset-x-0 top-[-68px] h-[520px]" />
+      <div className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-16 md:pt-24">
+        <h1 className="mk-display mk-enter max-w-[14ch] text-[clamp(40px,6vw,72px)]" style={{ ["--i" as string]: 0 }}>
+          Let&apos;s talk.
+        </h1>
+        <p className="mk-lede mk-enter mt-6" style={{ ["--i" as string]: 1 }}>
+          Questions, feedback, partnership ideas or a bug to report. {responseTime}
+        </p>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-[1fr_1.3fr]">
-        <div className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-line bg-panel p-6 shadow-card">
-            <IconBadge color="var(--c-tasks)" size={44}>
-              <Mail className="size-5" />
-            </IconBadge>
-            <p className="mt-4 text-[18px] font-semibold">Email</p>
-            {email ? (
-              <a href={`mailto:${email}`} className="mt-1 block break-all text-[16px] font-medium text-violet hover:underline">
-                {email}
-              </a>
-            ) : (
-              <p className="mt-1 text-[15px] text-muted">Email address coming soon.</p>
-            )}
-          </div>
-          <div className="rounded-2xl border border-line bg-panel p-6 shadow-card">
-            <IconBadge color="#0a66c2" size={44}>
-              <LinkedinIcon className="size-5" />
-            </IconBadge>
-            <p className="mt-4 text-[18px] font-semibold">LinkedIn</p>
-            <p className="mt-1 text-[15px] text-muted">Connect with {name || "the founder"} and follow how Nerox grows.</p>
-            {linkedin ? (
-              <a
-                href={linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl bg-[#0a66c2] px-5 text-[15px] font-semibold text-white hover:brightness-110"
-              >
-                <LinkedinIcon className="size-4" /> Connect on LinkedIn
-              </a>
-            ) : (
-              <p className="mt-3 text-[14px] text-faint">LinkedIn profile coming soon.</p>
-            )}
-          </div>
-          <div className="rounded-2xl border border-line bg-panel p-6 shadow-card">
-            <span className="flex size-11 items-center justify-center rounded-xl text-white" style={{ background: INSTAGRAM_GRADIENT }}>
-              <InstagramIcon className="size-5" />
-            </span>
-            <p className="mt-4 text-[18px] font-semibold">Instagram</p>
-            <p className="mt-1 text-[15px] text-muted">Follow @{SITE.instagram.handle} for updates, new features and behind the scenes.</p>
-            <a
-              href={SITE.instagram.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[15px] font-semibold text-white hover:brightness-110"
-              style={{ background: INSTAGRAM_GRADIENT }}
-            >
-              <InstagramIcon className="size-4" /> Follow on Instagram
-            </a>
-          </div>
-        </div>
-        <div className="self-start rounded-2xl border border-line bg-panel p-6 shadow-card md:p-8">
-          <h2 className="text-[22px] font-bold">Send us a message</h2>
-          {email ? (
+        <div className="mt-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <ul className="divide-y divide-white/10 self-start rounded-[24px] border border-white/10">
+            {channels.map((c) => (
+              <li key={c.title}>
+                <a
+                  href={c.href}
+                  target={c.href.startsWith("http") ? "_blank" : undefined}
+                  rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="group flex items-center gap-4 p-6 transition-colors hover:bg-white/[0.03]"
+                >
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl" style={{ background: c.bg, color: c.fg }}>
+                    {c.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[17px] font-semibold">{c.title}</span>
+                    <span className="block break-all text-[15px] text-muted">{c.body}</span>
+                  </span>
+                  <span className="text-[14px] font-semibold text-[#b8a6ff] transition-transform group-hover:translate-x-0.5">{c.cta}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div className="mk-surface rounded-[24px] p-6 md:p-8">
+            <h2 className="text-[22px] font-semibold">Send us a message</h2>
             <ContactForm email={email} />
-          ) : (
-            <p className="mt-3 text-[15px] text-muted">The contact form switches on once an email address is set. (Site owner: add it in <code className="text-fg">src/config/site.ts</code>.)</p>
-          )}
+          </div>
         </div>
       </div>
     </div>

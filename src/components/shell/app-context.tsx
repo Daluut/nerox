@@ -18,6 +18,11 @@ export interface ClientAppData {
   realtime: boolean;
   tourDone: boolean;
   aiEnabled: boolean;
+  /** AI is configured, but this workspace\'s plan only includes the help guide. */
+  aiOnPro: boolean;
+  plan: "early_access" | "free" | "pro";
+  canExport: boolean;
+  billingNotice: "payment_failed" | "ending" | null;
 }
 
 const Ctx = createContext<ClientAppData | null>(null);

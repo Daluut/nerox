@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { Button, Field } from "@/components/ui/primitives";
+import { Field } from "@/components/ui/primitives";
 
 const TOPICS = ["General question", "Feedback", "Report a problem", "Partnerships", "Press"];
 
@@ -39,9 +39,9 @@ export function ContactForm({ email }: { email: string }) {
       <Field label="Message" htmlFor="c-msg">
         <textarea id="c-msg" className="field min-h-[140px] resize-y" value={message} onChange={(e) => setMessage(e.target.value)} required maxLength={3000} />
       </Field>
-      <Button type="submit" variant="primary" disabled={!message.trim()} className="self-start">
+      <button type="submit" disabled={!message.trim()} className="mk-btn mk-btn-primary self-start disabled:pointer-events-none disabled:opacity-50">
         <Send className="size-4" /> Write the email
-      </Button>
+      </button>
       <p className="text-[13px] text-muted">
         {opened ? (
           <>

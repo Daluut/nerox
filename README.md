@@ -12,13 +12,31 @@ This repository contains the functional foundation plus Nerox's four signature f
 - **Zod** for server-side validation, **dnd-kit** for the board
 - **Vitest** + **PGlite** for unit and database tests, **Playwright** for the end-to-end workflow
 
+## Guides
+
+- [docs/domain.md](docs/domain.md): putting Nerox online and connecting `nerox.cc`
+- [docs/payments.md](docs/payments.md): switching on Stripe payments, step by step
+- [docs/pulse.md](docs/pulse.md): how the Pulse health score works
+
 ## Your brand details
 
 Everything shown on the public **home**, **About us**, **Pricing** and **Contact** pages comes from one file: `src/config/site.ts`: the brand story, what makes Nerox different, the founder's bio and quote, LinkedIn, Instagram (@neroxhq), contact email and the plans and prices. Edit that file to change any of it.
 
 ## What's implemented
 
-**Look and feel**
+**Public website** (always in the dark "Nerox night" look)
+- Home page with:
+  - an animated hero: the pulse line draws into a live health reading over a real screenshot;
+  - product showcases for Pulse, What If?, Memory and Nerox AI;
+  - an interactive What If? demo (delay a task and watch linked work move past the deadline);
+  - Memory estimate bars and a Nerox AI replay;
+  - how it works, security, the founder's quote, FAQ, Instagram and a final call to action.
+- Pages for Pricing (monthly/yearly switch, comparison table), About us (story, why Nerox is different, the founder and vision), Security and privacy, and Contact.
+- Real product screenshots in `public/product/` (WebP, 20–75 KB each), served through `next/image`.
+- Motion is CSS plus small client components (no animation library). It respects `prefers-reduced-motion`, and demos play once when scrolled into view.
+- SEO: canonical URLs, `sitemap.xml`, `robots.txt` and a generated social preview image, all from `NEXT_PUBLIC_SITE_URL`.
+
+**Look and feel (inside the app)**
 - Three colour themes chosen by each person: **Light** (default), **Dark** and **Nerox** (deep blue-purple). Pick one from the sidebar or Settings; it's remembered on that device and applied without a flash.
 - Each part of the app has its own colour (Home, My Tasks, Projects, Pulse, Team…), large buttons and roomy layouts.
 - Navigation grouped into short sections: Home / My Tasks / Projects, Insights, People, and Nerox (About, Contact).
@@ -67,8 +85,11 @@ Everything shown on the public **home**, **About us**, **Pricing** and **Contact
 **Nerox AI** (`src/lib/ai/`, `src/lib/actions/ai.ts`)
 - A floating "Ask Nerox AI" helper on every page. With `ANTHROPIC_API_KEY` set it answers using Claude with context about the current page and the person's projects; without a key it answers from the built-in help guide. Answers are labelled with where they came from. Rate limited per user.
 
-**Plans**
-- A public Pricing page (Free, Pro, Business, Enterprise) and a "Your plan" panel in Settings. Everyone is on Free with every feature during early access; paid plans show "Coming soon" with a "Register interest" email link.
+**Plans and payments** (`src/lib/billing/`, see [docs/payments.md](docs/payments.md))
+- Free: every core feature, up to 5 people per workspace. Pro (£6 per person a month, or £60 a year): unlimited people, full Nerox AI answers, CSV export and priority support.
+- Stripe Checkout for upgrades and Stripe's customer portal for cards, invoices and cancelling. Seats follow the number of active members.
+- Paid access comes only from verified webhooks (`/api/stripe/webhook`), written through a database function that only the service role can call. The success page never grants access.
+- Payments stay switched off until Stripe is configured. Until then the site shows Pro as "Coming soon", and nothing is limited (early access).
 
 ## Setup
 
@@ -82,7 +103,7 @@ npx supabase link --project-ref <your-project-ref>
 npx supabase db push
 
 # Option B: in the SQL editor, run each file in supabase/migrations/ in order:
-#   20261017000000_init.sql, then 20261018000000_whatif_memory.sql
+#   20261017000000_init.sql, 20261018000000_whatif_memory.sql, 20261019000000_billing.sql
 ```
 
 In the Supabase dashboard:
@@ -111,15 +132,21 @@ Without Supabase credentials the app shows a setup page instead of pretending to
 | `NEXT_PUBLIC_REALTIME` | no | `off` disables live updates |
 | `ANTHROPIC_API_KEY` | no | Turns on AI answers in Nerox AI. Server-only; never exposed to the browser. |
 | `NEROX_AI_MODEL` | no | Claude model for Nerox AI (default `claude-haiku-5-5`) |
+| `STRIPE_SECRET_KEY` | for payments | Stripe secret key. Server only. |
+| `STRIPE_WEBHOOK_SECRET` | for payments | Signing secret of the webhook endpoint |
+| `STRIPE_PRICE_PRO_MONTHLY` | for payments | Stripe price ID for Pro, monthly, per person |
+| `STRIPE_PRICE_PRO_YEARLY` | no | Stripe price ID for Pro, yearly, per person |
+| `SUPABASE_SERVICE_ROLE_KEY` | for payments | Used only by the Stripe webhook and seat syncing. Server only; never prefix with `NEXT_PUBLIC_`. |
 
-No service-role key is used anywhere; every query runs as the signed-in user.
+Every query from the app runs as the signed-in user, under row-level security. The one exception is billing: the Stripe webhook has no signed-in user, so it writes subscription state with the service-role key, through a single database function.
 
 ## Tests
 
 ```bash
 npm run typecheck
 npm run lint
-npm run test:unit   # dates, dependency graph, permissions, progress, templates, Pulse, What If?, Memory, help search
+npm run test:unit   # dates, dependency graph, permissions, progress, templates, Pulse, What If?, Memory, help search,
+                    # plan rules, Stripe webhook mapping and signature checks, CSV export
 npm run test:db     # applies the real migration to an in-process Postgres (PGlite) and tests RLS,
                     # workspace isolation, triggers, invitations, roles, notifications, snapshots
 npm run test:e2e    # full workflow in a browser against a running app (see below)
@@ -150,7 +177,10 @@ src/lib/pulse/            the Pulse engine (config, types, engine)
 src/lib/whatif/           the What If? simulation engine
 src/lib/memory/           the Memory learning engine
 src/lib/ai/               Nerox AI help guide and search
+src/lib/billing/          plan rules, Stripe client, webhook mapping, seat sync
+src/components/marketing/ public-site components: hero, demos, pricing cards, FAQ
 src/config/site.ts        brand, founder, socials, plans and prices
+docs/                     domain, payments and Pulse guides
 src/lib/data/             session/workspace context, queries, row mappers, shared view shapes
 src/lib/actions/          server actions — every write is validated with Zod and runs under RLS
 src/components/           design system (ui/), app shell, tasks, projects, Pulse
@@ -160,7 +190,9 @@ tests/unit, tests/db, tests/e2e
 
 ## Known limitations
 
-- **Paid plans can't be bought yet.** There's no payment provider (e.g. Stripe) or plan enforcement; prices in `src/config/site.ts` are placeholders, and "Register interest" opens an email.
+- **Payments haven't been run against Stripe's real servers.** The flow was tested against the real webhook route and database with signed events and a local stand-in for Stripe's API. Follow the test-mode checklist in `docs/payments.md` before going live.
+- **The Free member limit counts at invitation time** (active members plus pending invites). A workspace that drops from Pro to Free keeps everyone already in it, but can't invite more.
+- **No terms of service or privacy policy yet.** You need both before taking payments.
 - **Nerox AI** needs an `ANTHROPIC_API_KEY` for free-form answers; without one it matches questions against the help guide. Its rate limit is kept in memory per server instance.
 - **What If?** treats task dates as calendar days (no weekends or holidays) and doesn't model individual capacity. Moving due dates later can raise the health score because fewer tasks count as overdue; the page explains this when it happens.
 - **Memory** recognises kinds of work from keywords in task titles, and needs actual effort recorded on completed tasks for estimate lessons.

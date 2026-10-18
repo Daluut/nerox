@@ -1,167 +1,269 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Activity, ArrowRight, BookOpen, CheckSquare, FolderKanban, GraduationCap, Rocket, Sparkles, Split, Users } from "lucide-react";
+import { Activity, BookOpen, CalendarRange, CheckSquare, KeyRound, Lock, Radio, ShieldCheck, Sparkles, Split, Users, CreditCard } from "lucide-react";
 import { SITE } from "@/config/site";
-import { FollowInstagram } from "@/components/projects/follow-instagram";
-import { Avatar, ButtonLink, IconBadge } from "@/components/ui/primitives";
+import { billingEnabled } from "@/lib/billing/config";
+import pulseShot from "../../../public/product/pulse.webp";
+import timelineShot from "../../../public/product/timeline.webp";
+import { HeroShowcase } from "@/components/marketing/hero-showcase";
+import { WhatIfDemo } from "@/components/marketing/whatif-demo";
+import { MemoryDemo } from "@/components/marketing/memory-demo";
+import { AiDemo } from "@/components/marketing/ai-demo";
+import { Reveal } from "@/components/marketing/in-view";
+import { Faq } from "@/components/marketing/faq";
+import { InstagramBand } from "@/components/marketing/instagram-band";
 import { LinkedinIcon } from "@/components/ui/linkedin-icon";
 
-const FEATURES = [
-  { icon: <Activity className="size-5" />, color: "var(--c-pulse)", title: "Pulse: a health check for every project", body: "A score out of 100 and a plain-English list of what's wrong, with the evidence and a fix for each." },
-  { icon: <Split className="size-5" />, color: "var(--c-whatif)", title: "What If?: test decisions safely", body: "See what a delay, a holiday or a new deadline would do to your whole plan before you commit." },
-  { icon: <BookOpen className="size-5" />, color: "var(--c-memory)", title: "Memory: learns from every project", body: "Finds patterns in your finished work, like testing always overrunning, and helps you estimate better." },
-  { icon: <Sparkles className="size-5" />, color: "var(--violet)", title: "Nerox AI: help when you're stuck", body: "Ask how anything works, or why a project is flagged, without leaving the page." },
-  { icon: <FolderKanban className="size-5" />, color: "var(--c-projects)", title: "Plan in minutes", body: "Start from a template, drag tasks across a board, and see everything on a timeline." },
-  { icon: <CheckSquare className="size-5" />, color: "var(--c-tasks)", title: "Know what's yours", body: "My Tasks pulls your work from every project into one list, most urgent first." },
-];
-
-const AUDIENCES = [
-  { icon: <GraduationCap className="size-5" />, color: "var(--c-tasks)", title: "Student teams", body: "Group coursework and software projects with a hard hand-in date." },
-  { icon: <Rocket className="size-5" />, color: "var(--c-memory)", title: "Start-ups and small businesses", body: "Launches, client work and everything in between." },
-  { icon: <Users className="size-5" />, color: "var(--c-team)", title: "Project leads", body: "Anyone who needs to know early whether a deadline is still realistic." },
-];
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function HomePage() {
+  const paid = billingEnabled();
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-60"
-          style={{ background: "radial-gradient(60% 50% at 80% 10%, var(--violet-soft), transparent), radial-gradient(40% 40% at 10% 90%, var(--cyan-soft), transparent)" }}
-        />
-        <div className="relative mx-auto grid max-w-[1180px] items-center gap-12 px-5 py-16 md:py-24 lg:grid-cols-[1.1fr_1fr]">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-panel px-3 py-1 text-[13px] font-medium text-muted">
-              <span className="size-2 rounded-full bg-success" /> Free while in early access
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <section className="relative -mt-[68px] overflow-hidden pt-[68px]">
+        <div aria-hidden className="mk-light pointer-events-none absolute inset-0" />
+        <div aria-hidden className="mk-grid pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto max-w-[1180px] px-5 pb-28 pt-16 md:pt-24">
+          <div className="max-w-[860px]">
+            <p className="mk-enter inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-[13px] text-muted" style={{ ["--i" as string]: 0 }}>
+              <span className="relative flex size-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-[#43d39e] opacity-60 motion-reduce:hidden" />
+                <span className="relative size-2 rounded-full bg-[#43d39e]" />
+              </span>
+              Free to start, no card needed
             </p>
-            <h1 className="mt-5 text-[44px] font-bold leading-[1.05] tracking-tight md:text-[58px]">{SITE.tagline}</h1>
-            <p className="mt-5 max-w-xl text-[18px] leading-relaxed text-muted">{SITE.description}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/signup" variant="primary" size="lg">
-                Get started free <ArrowRight className="size-5" />
-              </ButtonLink>
-              <ButtonLink href="/about" variant="secondary" size="lg">
-                Learn about us
-              </ButtonLink>
+            <h1 className="mk-display mk-enter mt-6 text-[clamp(42px,7vw,84px)]" style={{ ["--i" as string]: 1 }}>
+              Spot a slipping project while there&apos;s still time to fix&nbsp;it.
+            </h1>
+            <p className="mk-lede mk-enter mt-6" style={{ ["--i" as string]: 2 }}>
+              Nerox is a project workspace that reads your team&apos;s tasks for you. It scores each project&apos;s health, explains every risk with the evidence, and shows what a delay would do before you decide.
+            </p>
+            <div className="mk-enter mt-9 flex flex-wrap gap-3" style={{ ["--i" as string]: 3 }}>
+              <Link href="/signup" className="mk-btn mk-btn-primary">
+                Start free
+              </Link>
+              <Link href="#product" className="mk-btn mk-btn-ghost">
+                See how it works
+              </Link>
             </div>
           </div>
-          <ProductSketch />
+          <div className="mt-24 md:mt-28">
+            <HeroShowcase />
+          </div>
+          <p className="mt-16 text-center text-[13px] text-faint">Real Nerox screens, shown with an example project.</p>
         </div>
       </section>
 
-      {/* How it works — a real sequence, so it's numbered */}
-      <section className="mx-auto max-w-[1180px] px-5 py-16">
-        <h2 className="text-[30px] font-bold tracking-tight">How it works</h2>
-        <ol className="mt-8 grid gap-4 md:grid-cols-3">
+      {/* ── The idea ─────────────────────────────────────────────────────── */}
+      <section className="mx-auto grid max-w-[1180px] gap-12 px-5 py-20 md:grid-cols-[1fr_1.1fr] md:py-28">
+        <h2 className="mk-h2 max-w-[14ch]">Most tools store your tasks. Nerox reads them.</h2>
+        <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
           {[
-            ["Create a project", "Pick a template or start blank. Add a deadline and invite your team."],
-            ["Add and share the work", "Give each task an owner and a due date. Drag it across the board as it moves."],
-            ["Let Pulse watch it", "Check the health score any time. Every warning comes with the reason and a next step."],
-          ].map(([t, b], i) => (
-            <li key={t} className="rounded-2xl border border-line bg-panel p-6 shadow-card">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-violet text-[17px] font-bold text-white">{i + 1}</span>
-              <p className="mt-4 text-[18px] font-semibold">{t}</p>
-              <p className="mt-1.5 text-[15px] text-muted">{b}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* Features */}
-      <section className="bg-sidebar py-16">
-        <div className="mx-auto max-w-[1180px] px-5">
-          <h2 className="text-[30px] font-bold tracking-tight">Features you won&apos;t find anywhere else</h2>
-          <p className="mt-2 max-w-2xl text-[17px] text-muted">Most tools store your tasks. Nerox understands them.</p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="flex flex-col gap-4 rounded-2xl border border-line bg-panel p-6 shadow-card">
-                <IconBadge color={f.color} size={44}>
-                  {f.icon}
-                </IconBadge>
-                <div>
-                  <p className="text-[18px] font-semibold">{f.title}</p>
-                  <p className="mt-1 text-[15px] text-muted">{f.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Audience */}
-      <section className="mx-auto max-w-[1180px] px-5 py-16">
-        <h2 className="text-[30px] font-bold tracking-tight">Made for teams like yours</h2>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {AUDIENCES.map((a) => (
-            <div key={a.title} className="rounded-2xl border border-line bg-panel p-6 shadow-card">
-              <IconBadge color={a.color} size={44}>
-                {a.icon}
-              </IconBadge>
-              <p className="mt-4 text-[18px] font-semibold">{a.title}</p>
-              <p className="mt-1 text-[15px] text-muted">{a.body}</p>
+            ["What's late", "Overdue work, weighted by how much it matters and what's waiting on it."],
+            ["What's holding work up", "Tasks that block others, and chains that can't finish in time."],
+            ["Who has too much", "Open work per person, so nobody quietly drowns."],
+            ["Whether the deadline holds", "A forecast from your real pace, only when there's enough history."],
+          ].map(([t, b]) => (
+            <div key={t} className="border-t border-white/10 pt-5">
+              <dt className="text-[18px] font-semibold">{t}</dt>
+              <dd className="mt-2 text-[15px] leading-relaxed text-muted">{b}</dd>
             </div>
           ))}
-        </div>
+        </dl>
       </section>
 
-      {/* Founder */}
-      <section className="mx-auto max-w-[1180px] px-5 pb-16">
-        <div className="flex flex-col gap-6 rounded-3xl border border-line bg-panel p-8 shadow-card md:flex-row md:items-center">
-          <Avatar name={SITE.owner.name} size={72} />
-          <div className="flex-1">
-            <p className="text-[14px] font-semibold text-violet">Founded by {SITE.owner.name}</p>
-            <p className="mt-1 max-w-2xl text-[19px] font-semibold leading-snug">{SITE.owner.vision[0]}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/about#founder" variant="secondary">
-              Read the story
-            </ButtonLink>
-            <a
-              href={SITE.owner.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#0a66c2] px-5 text-[15px] font-semibold text-white hover:brightness-110"
-            >
-              <LinkedinIcon className="size-4" /> Connect
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* ── Product ──────────────────────────────────────────────────────── */}
+      <div id="product" className="scroll-mt-24">
+        <Showcase
+          color="#ff7ac6"
+          icon={<Activity className="size-5" />}
+          name="Pulse"
+          title="A health check you can actually read."
+          body="Every project gets a score out of 100 from seven plain checks. Each warning shows the evidence, what could happen next, and the one thing to do about it."
+          points={["Facts, rules and forecasts are labelled, so you know what's certain", "Says what it couldn't measure instead of guessing", "Weighting lets your team decide what matters most"]}
+          visual={
+            <Reveal as="figure" className="mk-frame">
+              <div className="mk-frame-bar" aria-hidden>
+                <i />
+                <i />
+                <i />
+              </div>
+              <Image src={pulseShot} alt="The Pulse tab: a health score of 70, a breakdown of seven factors, and a critical risk with its evidence and suggested next step." sizes="(min-width: 1024px) 640px, 100vw" placeholder="blur" className="h-auto w-full" />
+            </Reveal>
+          }
+        />
+        <Showcase
+          flip
+          color="#b69bff"
+          icon={<Split className="size-5" />}
+          name="What If?"
+          title="Test a decision before you make it."
+          body="A task running late, someone on holiday, a deadline moving. Try it out and see which work moves, who's affected and what happens to the finish date. Your real plan only changes when you press Apply."
+          points={["Follows the links between tasks, including spare time", "Save scenarios to discuss with your team", "Apply every change at once, or not at all"]}
+          visual={<WhatIfDemo />}
+        />
+        <Showcase
+          color="#ffcf5a"
+          icon={<BookOpen className="size-5" />}
+          name="Memory"
+          title="Every project makes the next one better."
+          body="Memory looks back at your finished work and finds the patterns, like testing always taking twice as long. When you plan a new project, it suggests better estimates."
+          points={["Only speaks up with enough evidence", "Shows exactly which tasks each lesson is based on", "Keep retrospective notes next to the numbers"]}
+          visual={<MemoryDemo />}
+        />
+        <Showcase
+          flip
+          color="#7c5cff"
+          icon={<Sparkles className="size-5" />}
+          name="Nerox AI"
+          title="Stuck? Ask, right where you are."
+          body="Ask how anything works, or why a project is flagged, without leaving the page. Answers always say where they came from: the help guide, or AI that can see a summary of your projects."
+          points={["Help guide answers on every plan", "Full AI answers about your own projects on Pro", "Never invents facts about your work"]}
+          visual={<AiDemo />}
+        />
+      </div>
 
-      {/* Why different */}
-      <section className="mx-auto max-w-[1180px] px-5 pb-16">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="text-[30px] font-bold tracking-tight">Why teams choose Nerox</h2>
-          <Link href="/about" className="text-[15px] font-semibold text-violet hover:underline">
-            Read our story
-          </Link>
-        </div>
-        <ul className="mt-6 grid gap-3 md:grid-cols-2">
-          {SITE.differentiators.slice(0, 4).map((d) => (
-            <li key={d.title} className="rounded-2xl border border-line bg-panel p-5 shadow-card">
-              <p className="text-[17px] font-semibold">{d.title}</p>
-              <p className="mt-1 text-[15px] text-muted">{d.body}</p>
+      {/* ── Everyday tools ───────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-[1180px] px-5 py-20 md:py-28">
+        <h2 className="mk-h2 max-w-[18ch]">And everything you&apos;d expect, done simply.</h2>
+        <p className="mk-lede mt-5">Plan on a board, a list or a timeline. They all show the same work, so nothing gets out of sync.</p>
+        <Reveal as="figure" className="mk-frame mt-12">
+          <div className="mk-frame-bar" aria-hidden>
+            <i />
+            <i />
+            <i />
+          </div>
+          <Image src={timelineShot} alt="The Timeline view: tasks as bars across weeks, with links between dependent tasks, today's date and the deadline marked." sizes="(min-width: 1200px) 1140px, 100vw" placeholder="blur" className="h-auto w-full" />
+        </Reveal>
+        <ul className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            [<CalendarRange key="i" className="size-5" />, "Board, list and timeline", "Drag cards, sort lists, and see links between tasks."],
+            [<CheckSquare key="i" className="size-5" />, "My Tasks", "Your work from every project in one list, most urgent first."],
+            [<Users key="i" className="size-5" />, "Roles and invites", "Owners, admins, members and read-only viewers."],
+            [<Radio key="i" className="size-5" />, "Live updates", "When a teammate changes something, your page refreshes."],
+          ].map(([icon, t, b]) => (
+            <li key={t as string}>
+              <span className="flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-[#b8a6ff]">{icon}</span>
+              <p className="mt-4 text-[16px] font-semibold">{t}</p>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{b}</p>
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="mx-auto max-w-[1180px] px-5 pb-16">
-        <FollowInstagram />
+      {/* ── How it works ─────────────────────────────────────────────────── */}
+      <section className="border-y border-white/[0.07] bg-white/[0.015]">
+        <div className="mx-auto max-w-[1180px] px-5 py-20 md:py-24">
+          <h2 className="mk-h2">Up and running in minutes.</h2>
+          <p className="mk-lede mt-4">Built for student teams, start-ups and anyone who needs to know early whether a deadline is still realistic.</p>
+          <ol className="relative mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
+            <span aria-hidden className="absolute left-5 right-5 top-5 hidden h-px bg-gradient-to-r from-[#4dd8ff]/60 via-[#7c5cff] to-[#7c5cff]/0 md:block" />
+            {[
+              ["Create a project", "Start from a template for software, coursework or a launch, or begin blank. Add a deadline."],
+              ["Add the work and invite your team", "Give each task an owner, a due date and the tasks it waits on. A short tour shows you around."],
+              ["Let Pulse keep watch", "Check the health score any time. When something slips, you'll see why and what to do."],
+            ].map(([t, b], i) => (
+              <li key={t} className="relative">
+                <span className="relative flex size-10 items-center justify-center rounded-full border border-[#7c5cff]/60 bg-[#0f1130] text-[15px] font-semibold text-[#c9bcff]">{i + 1}</span>
+                <p className="mt-5 text-[19px] font-semibold">{t}</p>
+                <p className="mt-2 max-w-[34ch] text-[15px] leading-relaxed text-muted">{b}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
-      {/* CTA */}
+      {/* ── Trust ────────────────────────────────────────────────────────── */}
+      <section className="mx-auto grid max-w-[1180px] gap-12 px-5 py-20 md:grid-cols-[0.9fr_1.1fr] md:py-28">
+        <div>
+          <span className="flex size-12 items-center justify-center rounded-2xl bg-[#43d39e]/10 text-[#43d39e]">
+            <ShieldCheck className="size-6" />
+          </span>
+          <h2 className="mk-h2 mt-6 max-w-[14ch]">Built to be trusted with your team&apos;s work.</h2>
+          <p className="mk-lede mt-5">Security is part of how Nerox is built, not an add-on.</p>
+          <Link href="/security" className="mk-btn mk-btn-ghost mt-8">
+            Read about security and privacy
+          </Link>
+        </div>
+        <ul className="grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2">
+          {[
+            [<Lock key="i" className="size-5" />, "Private by default", "Every workspace is walled off inside the database itself, so one team can never read another's projects."],
+            [<Users key="i" className="size-5" />, "You decide who sees what", "Owners, admins, members and viewers each get exactly the access their role allows."],
+            [<KeyRound key="i" className="size-5" />, "Safe invitations", "Invite links work once, expire, and are stored only as a scrambled fingerprint."],
+            [<CreditCard key="i" className="size-5" />, "Payments by Stripe", "Card details go straight to Stripe. They never reach Nerox's servers."],
+          ].map(([icon, t, b]) => (
+            <li key={t as string} className="bg-[#0b0c2a] p-6">
+              <span className="text-[#43d39e]">{icon}</span>
+              <p className="mt-4 text-[16px] font-semibold">{t}</p>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{b}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ── Founder ──────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1180px] px-5 pb-20">
-        <div className="rounded-3xl bg-violet px-8 py-12 text-white md:px-14">
-          <h2 className="max-w-xl text-[32px] font-bold leading-tight tracking-tight">Start your first project in under five minutes.</h2>
-          <p className="mt-3 max-w-xl text-[17px] text-white/80">Sign up free, no card needed. A short tour shows you around the first time you sign in.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/signup" className="inline-flex h-13 items-center gap-2 rounded-xl bg-white px-7 text-[16px] font-semibold text-[#3b1fd1] hover:bg-white/90">
-              Create my account <ArrowRight className="size-5" />
+        <figure className="relative overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-[#1a1450] via-[#11123a] to-[#0b0c2a] p-8 md:p-14">
+          <svg aria-hidden className="pointer-events-none absolute -right-10 -top-10 opacity-[0.05]" width="360" height="360" viewBox="0 0 24 24" fill="none">
+            <path d="M5 19V5l14 14V5" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <blockquote className="relative max-w-[30ch] text-[clamp(24px,3.2vw,38px)] font-medium italic leading-[1.25] tracking-[-0.015em]">&ldquo;{SITE.owner.quote}&rdquo;</blockquote>
+          <figcaption className="relative mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <span className="flex size-12 items-center justify-center rounded-full bg-[#7c5cff] text-[16px] font-semibold text-white" aria-hidden>
+              DW
+            </span>
+            <span>
+              <span className="block text-[16px] font-semibold">{SITE.owner.name}</span>
+              <span className="block text-[14px] text-muted">Founder and owner of Nerox</span>
+            </span>
+            <span className="flex flex-wrap gap-3 sm:ml-auto">
+              <Link href="/about#founder" className="mk-btn mk-btn-ghost mk-btn-sm">
+                Read the story
+              </Link>
+              <a href={SITE.owner.linkedin} target="_blank" rel="noopener noreferrer" className="mk-btn mk-btn-sm bg-[#0a66c2] text-white hover:brightness-110">
+                <LinkedinIcon className="size-4" /> Connect on LinkedIn
+              </a>
+            </span>
+          </figcaption>
+        </figure>
+      </section>
+
+      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+      <section className="mx-auto grid max-w-[1180px] gap-10 px-5 pb-20 md:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <h2 className="mk-h2">Questions, answered.</h2>
+          <p className="mt-4 text-[15px] text-muted">
+            Anything else?{" "}
+            <Link href="/contact" className="font-semibold text-[#b8a6ff] hover:underline">
+              Get in touch
             </Link>
-            <Link href="/pricing" className="inline-flex h-13 items-center rounded-xl border border-white/40 px-7 text-[16px] font-semibold text-white hover:bg-white/10">
-              See plans and pricing
+            .
+          </p>
+        </div>
+        <Faq paid={paid} />
+      </section>
+
+      <section className="mx-auto max-w-[1180px] px-5 pb-20">
+        <InstagramBand />
+      </section>
+
+      {/* ── Final call to action ─────────────────────────────────────────── */}
+      <section className="mx-auto max-w-[1180px] px-5 pb-24">
+        <div className="relative overflow-hidden rounded-[28px] border border-[#7c5cff]/40 px-8 py-16 text-center md:py-20">
+          <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(60% 80% at 50% 0%, rgb(124 92 255 / 0.35), transparent 70%)" }} />
+          <svg aria-hidden className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto h-16 w-full max-w-[700px] opacity-40" viewBox="0 0 700 64" preserveAspectRatio="none" fill="none">
+            <path d="M0 40 H260 L276 40 L290 12 L306 58 L320 28 L332 40 H700" stroke="#7c5cff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <h2 className="mk-h2 relative mx-auto max-w-[18ch]">Start your first project in five minutes.</h2>
+          <p className="relative mx-auto mt-4 max-w-md text-[17px] text-muted">Free plan, no card needed. A short tour shows you around the first time you sign in.</p>
+          <div className="relative mt-9 flex flex-wrap justify-center gap-3">
+            <Link href="/signup" className="mk-btn mk-btn-primary">
+              Create my free account
+            </Link>
+            <Link href="/pricing" className="mk-btn mk-btn-ghost">
+              Compare plans
             </Link>
           </div>
         </div>
@@ -170,42 +272,46 @@ export default function HomePage() {
   );
 }
 
-/** A drawn illustration of the product, clearly labelled as an example. */
-function ProductSketch() {
-  const cols = [
-    { name: "To do", color: "var(--c-tasks)", cards: ["Write report intro", "Design the logo"] },
-    { name: "Doing", color: "var(--warning)", cards: ["Build sign-up page"] },
-    { name: "Done", color: "var(--success)", cards: ["Pick a topic", "Set the deadline"] },
-  ];
+function Showcase({
+  name,
+  title,
+  body,
+  points,
+  visual,
+  color,
+  icon,
+  flip,
+}: {
+  name: string;
+  title: string;
+  body: string;
+  points: string[];
+  visual: React.ReactNode;
+  color: string;
+  icon: React.ReactNode;
+  flip?: boolean;
+}) {
   return (
-    <figure className="relative" aria-label="Illustration of a Nerox project board and health score">
-      <div className="rounded-3xl border border-line bg-panel p-5 shadow-[0_30px_80px_-20px_var(--violet-soft)]">
-        <div className="flex items-center justify-between">
-          <p className="text-[15px] font-semibold">Example project</p>
-          <span className="rounded-full bg-success-soft px-3 py-1 text-[13px] font-semibold text-success">On track</span>
-        </div>
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          {cols.map((c) => (
-            <div key={c.name} className="rounded-xl bg-raised p-2.5">
-              <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-muted">
-                <span className="size-2 rounded-full" style={{ background: c.color }} />
-                {c.name}
-              </p>
-              <div className="flex flex-col gap-2">
-                {c.cards.map((t) => (
-                  <div key={t} className="rounded-lg border border-line bg-panel p-2 text-[12px] leading-snug">
-                    {t}
-                  </div>
-                ))}
-              </div>
-            </div>
+    <section className={`mx-auto grid max-w-[1180px] items-center gap-10 px-5 py-14 md:py-20 lg:gap-16 ${flip ? "lg:grid-cols-[1.15fr_0.85fr]" : "lg:grid-cols-[0.85fr_1.15fr]"}`}>
+      <div className={flip ? "lg:order-2" : undefined}>
+        <p className="flex items-center gap-2.5 text-[15px] font-semibold" style={{ color }}>
+          <span className="flex size-9 items-center justify-center rounded-xl" style={{ background: `color-mix(in srgb, ${color} 14%, transparent)` }}>
+            {icon}
+          </span>
+          {name}
+        </p>
+        <h2 className="mk-h2 mt-5">{title}</h2>
+        <p className="mt-5 text-[17px] leading-relaxed text-muted">{body}</p>
+        <ul className="mt-7 space-y-3 text-[15px]">
+          {points.map((p) => (
+            <li key={p} className="flex gap-3">
+              <span aria-hidden className="mt-[9px] h-px w-4 shrink-0" style={{ background: color }} />
+              {p}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
-      <div className="absolute -bottom-16 -left-4 w-[230px] rounded-2xl border border-line bg-panel p-4 shadow-card md:-left-10">
-        <p className="text-[12px] font-semibold text-c-pulse">Pulse</p>
-        <p className="mt-1 text-[14px] font-semibold leading-snug">“Build sign-up page” is due tomorrow and 2 tasks wait on it.</p>
-      </div>
-    </figure>
+      <div className={flip ? "lg:order-1" : undefined}>{visual}</div>
+    </section>
   );
 }
